@@ -137,3 +137,148 @@ zip -r archive.zip folder_name/              # Recursively zip a folder
 unzip archive.zip                            # Extract zip
 unzip archive.zip -d target_directory/       # Extract to specific directory
 unzip -l archive.zip                         # List contents of zip
+Files and Permissions
+````
+## 📁 Linux Files and Directory Permissions (Letters)
+
+Linux permissions are represented by letters:
+
+r = read
+
+w = write
+
+x = execute
+````
+ls -l
+# -rw-r--r-- 1 user group 0 May 13 08:30 file.txt
+chmod u+x script.sh     # Add execute permission to the user
+chmod g-w file.txt      # Remove write from group
+chmod o+r file.txt      # Add read for others
+````
+## 🔢 Files and Directory Permissions (Numeric)
+Each permission has a value: r = 4, w = 2, x = 1
+````
+chmod 755 script.sh     # rwxr-xr-x
+chmod 644 file.txt      # rw-r--r--
+````
+👥 File Ownership Commands
+Check ownership and change ownership
+````
+ls -l
+chown newuser file.txt         # Change owner
+chown newuser:newgroup file.txt # Change owner and group
+````
+## Access Control List (ACL)
+ACL provides more fine-grained permission control.
+Enable ACL on filesystem:
+````mount -o remount,acl / ````
+Set ACL:
+````setfacl -m u:john:rwx file.txt````
+````getfacl file.txt````
+## 🧭 Navigation & Productivity 🆘 Help Commands
+````
+man chmod
+chmod --help
+info chmod
+````
+## ⌨️ TAB Completion & History
+Use TAB to auto-complete paths and commands.
+
+Press ↑ (Up arrow) to navigate command history.
+
+## 📝 Adding Text to Files
+````
+echo "Hello, world" > hello.txt
+cat > note.txt
+````
+##🔁 Input/Output Redirection
+````
+📤 Standard Output to File
+
+echo "Output" > out.txt      # Overwrite
+echo "More" >> out.txt       # Append
+````
+##📋 Using tee to Save and Display
+
+````
+echo "Log line" | tee logfile.txt
+````
+##🔗 Pipes
+
+The | Pipes command is used for chaining or channelling initial command to produce a fine output 
+````
+ls -l | grep ".txt"
+````
+##🛠️ File Operations
+
+🧹 File Maintenance Commands some of the commands here are used to create new file, remove or delete a file , move a file and even copy a file
+````
+    touch newfile.txt
+    rm oldfile.txt
+    mv oldname.txt newname.txt
+    cp file.txt backup.txt
+ ````   
+
+##🔍 File Viewing & Text Processing
+📖 File Display Commands
+````
+cat file.txt
+less file.txt
+head -n 5 file.txt
+tail -f logfile.txt
+````
+
+##🧹 Filters (Text Processors)
+  ✂️ cut
+````
+cut -d ":" -f1 /etc/passwd
+````
+  📄 awk
+````
+awk '{print $1, $3}' users.txt
+````
+🔍 grep / egrep
+````
+grep "error" logfile.txt
+egrep "fail|error" logfile.txt
+````
+🧮 wc (Word Count)
+````
+wc file.txt
+wc -l file.txt   # Line count
+````
+📑 sort, uniq
+````
+sort names.txt | uniq
+sort -u names.txt
+````
+📂 Compare Files
+````
+diff file1.txt file2.txt
+cmp file1.txt file2.txt
+````
+📦 Archiving and Compression
+🗜️ Compress & Uncompress
+bash
+````
+gzip file.txt
+gunzip file.txt.gz
+````
+````
+bzip2 file.txt
+bunzip2 file.txt.bz2
+````
+````
+xz file.txt
+unxz file.txt.xz
+````
+  ✂️ Truncate File Size
+````
+truncate -s 0 logfile.txt       # Empties file
+truncate -s 1K data.txt         # Set size to 1KB
+````
+  🧩 File Combination and Splitting
+````
+cat part1.txt part2.txt > full.txt      # Combine
+split -b 1M bigfile.txt chunk_          # Split into 1MB files
+````
