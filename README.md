@@ -47,12 +47,8 @@ Welcome to my public GitHub portfolio documenting my journey as a **Linux Engine
   ![image](https://github.com/user-attachments/assets/10ff9abf-7021-4d73-9a4e-0a583fa65a69) To start the Vmware workstation , you can start from the start menu and even create a new virtual machine directly 
 
 - ✅ Created First Virtual Machine
-- ✅ Installed Ubuntu ![image](https://github.com/user-attachments/assets/7e9a6c9f-37c6-4448-a803-bd8d519e7984)
-![image](https://github.com/user-attachments/assets/c480e013-d10d-4d11-9cc0-ed6eeda106d8)
-![image](https://github.com/user-attachments/assets/dfdabcf0-1ce3-42dc-b1c3-ea193896e257)
-![image](https://github.com/user-attachments/assets/ed18ebf6-d6d0-4dea-a9e1-76dfee6f8f06)
-![image](https://github.com/user-attachments/assets/9074be7a-1f1e-49b9-91dd-44c9411fb16c)
-![image](https://github.com/user-attachments/assets/7489c7c9-1e09-452a-9671-ca454e199613)
+- ✅ Installed Ubuntu
+- ![image](https://github.com/user-attachments/assets/7e9a6c9f-37c6-4448-a803-bd8d519e7984)![image](https://github.com/user-attachments/assets/c480e013-d10d-4d11-9cc0-ed6eeda106d8)![image](https://github.com/user-attachments/assets/dfdabcf0-1ce3-42dc-b1c3-ea193896e257)![image](https://github.com/user-attachments/assets/ed18ebf6-d6d0-4dea-a9e1-76dfee6f8f06)![image](https://github.com/user-attachments/assets/9074be7a-1f1e-49b9-91dd-44c9411fb16c)![image](https://github.com/user-attachments/assets/7489c7c9-1e09-452a-9671-ca454e199613)
 
 - ✅ Took First Snapshot
 
