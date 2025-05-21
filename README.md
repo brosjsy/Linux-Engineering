@@ -297,6 +297,34 @@ i                     # Switch to insert mode
 :q                    # Quit vi
 :wq                   # Save and quit
 dd                    # Delete a line
+vi filename.txt                      # Open or create a file
+i                                    # Enter insert mode
+Esc                                  # Exit insert mode
+:w                                   # Save changes
+:q                                   # Quit editor
+:wq                                  # Save and quit
+:q!                                  # Quit without saving
+dd                                   # Delete current line
+yy                                   # Copy (yank) current line
+p                                    # Paste copied line
+u                                    # Undo last change
+Ctrl + r                             # Redo
+:set number                          # Show line numbers
+:set nonumber                        # Hide line numbers
+/word                                # Search for a word
+:n                                   # Go to next search result
+:N                                   # Go to previous search result
+:10                                  # Go to line 10
+:%s/old/new/g                        # Replace all instances of "old" with "new"
+:r filename                          # Insert content of another file
+:!ls                                 # Run shell command from vi
+vim filename.txt                     # Open file in vim
+vi filename.txt                      # Open file in vi (minimal features)
+vimdiff file1 file2                  # Compare two files
+vim -O file1 file2                   # Open files in vertical split
+vim -p file1 file2                   # Open files in tabs
+vim -u NONE filename.txt             # Open vim without plugins/settings
+
 ````
 ✂️ Text Stream Editors
 🔹 sed Command (Stream Editor)
@@ -307,6 +335,17 @@ sed '/pattern/d' file.txt                # Delete lines matching pattern
 sed -i 's/old/new/g' file.txt            # In-place substitution
 sed '2d' file.txt                        # Delete 2nd line
 sed -n '/pattern/p' file.txt             # Print lines matching pattern
+sed 's/old/new/' file.txt            # Replace first "old" with "new" per line
+sed 's/old/new/g' file.txt           # Replace all "old" with "new"
+sed -i 's/ubuntu/debian/g' file.txt  # Edit file in-place
+sed -n '/pattern/p' file.txt         # Print lines matching pattern
+sed '/pattern/d' file.txt            # Delete lines with matching pattern
+sed -n '5,10p' file.txt              # Print lines 5 to 10
+sed '1d' file.txt                    # Delete the first line
+sed '$d' file.txt                    # Delete the last line
+sed -i '2i\Inserted Line' file.txt   # Insert line above line 2
+sed -i '3a\Appended Line' file.txt   # Append after line 3
+
 ````
 
 👤 User Account Management
@@ -318,6 +357,18 @@ usermod -aG group username    # Add user to a group
 id username                   # Check user ID and group
 whoami                        # Show current user
 userdel username              # Delete a user
+adduser juwop                        # Add a new user
+useradd -m user1                    # Create user with home directory
+passwd juwop                        # Set password for user
+usermod -aG sudo juwop              # Add user to sudo group
+deluser juwop                       # Delete user
+userdel -r user1                    # Delete user and home directory
+groupadd devops                     # Create new group
+usermod -aG devops juwop            # Add user to group
+id juwop                            # Show UID, GID and groups
+groups juwop                        # Show user's groups
+chage -l juwop                      # Show user password aging info
+
 ````
 ⏳ Password Aging
 ````
@@ -336,6 +387,13 @@ chage -m 7 username           # Set min password age
 chage -W 10 username          # Set warning days before expiration
 chage -E 2025-12-31 username  # Expiry date
 passwd -x 90 username         # Another way to set max age
+su - juwop                          # Switch to user
+sudo su                            # Switch to root via sudo
+sudo apt update                    # Run command as root
+sudo -u www-data ls /var/www       # Run command as another user
+whoami                             # Display current user
+sudo -i                            # Start root login shell
+
 ````
 👀 Monitor and Talk to Users
 ````
@@ -345,6 +403,57 @@ id                           # Show user ID info
 last                         # Show last login of users
 write username               # Send message to a user
 wall "Message"               # Broadcast message to all users
+who                              # List users currently logged in
+w                                # Display users and their activities
+users                            # Show logged-in usernames only
+id juwop                         # Show UID, GID, groups for a user
+groups juwop                     # Show user’s groups
+logname                          # Show current login name
+whoami                           # Display effective username
+hostname                         # Show system hostname
+uptime                           # Show how long system has been running
+lslogins                        # Display detailed user account information
+last                             # Show last logins
+last -a                          # Show logins with hostname
+last -x                          # Include system shutdown/reboot info
+lastlog                          # Show last login for all users
+lastlog | grep -v "**Never logged in**"  # Show users who have logged in
+faillog                          # Show failed login attempts
+ac                               # Connect time report
+ac -d                            # Show connect time per day
+ac -p                            # Connect time per user
+who -b                           # Show last system boot time
+ps -u juwop                      # Show processes owned by user
+pgrep -u juwop                   # Get PIDs owned by user
+pkill -u juwop                   # Kill all processes for user
+top -u juwop                     # Monitor resource usage for user
+htop                             # Interactive process monitor
+pstree -u juwop                  # Tree of processes for user
+lsof -u juwop                    # Open files by user
+finger juwop                     # User details (if installed)
+who -u                           # Show idle time and PID
+whoami && id                    # Show current user and identity info
+tty                              # Show current terminal
+who -m                           # Display your session only
+who -T                           # Show terminal write status
+users | tr ' ' '\n' | sort | uniq -c   # Count logged-in sessions per user
+loginctl                        # Systemd user sessions
+loginctl list-sessions          # Show active user sessions
+loginctl show-session $XDG_SESSION_ID  # Session info for systemd
+ss -pt                           # Show users connected to SSH/TCP
+ps aux | grep ssh               # Show SSH user sessions
+cat /etc/passwd                 # Show all user accounts
+journalctl _UID=$(id -u juwop)     # View logs by user ID
+ausearch -ua $(id -u juwop)        # Search audit logs (if auditd is enabled)
+auditctl -l                        # List active audit rules
+watch who                          # Monitor logins in real-time
+watch 'ps -u juwop'                # Monitor user processes live
+last | grep juwop                  # See login history for specific user
+getent passwd juwop                # Lookup user info via NSS
+stat /home/juwop                   # Show detailed file info for user's home
+sudo grep juwop /var/log/auth.log  # Auth logs (Debian/Ubuntu)
+sudo grep juwop /var/log/secure    # Auth logs (RHEL/CentOS)
+
 ````
 🔍 System Utility Commands
 This are the day to days activities that will be run on linux system 
@@ -365,6 +474,59 @@ kill PID                     # Kill process by PID
 killall process_name         # Kill process by name
 bg                           # Send job to background
 fg                           # Bring background job to foreground
+````
+
+Foreground & Background Process Control
+````
+sleep 60 &                       # Run command in background
+bg                               # Resume stopped job in background
+fg                               # Resume job in foreground
+ctrl+z                           # Pause (stop) a foreground process
+disown                           # Remove job from shell management
+nohup command &                  # Run command immune to hangups
+setsid command                   # Run in new session
+command &>/dev/null &           # Run silently in background
+wait                             # Wait for background jobs to finish
+jobs -l                          # Jobs with PIDs
+````
+Killing & Signaling Processes
+````
+kill <PID>                       # Terminate a process by PID
+kill -9 <PID>                    # Force kill (SIGKILL)
+killall firefox                  # Kill all processes by name
+pkill firefox                    # Kill process by name
+pkill -u juwop                   # Kill processes of a specific user
+xkill                            # GUI tool to kill a window (X11)
+kill -STOP <PID>                 # Stop/suspend process
+kill -CONT <PID>                 # Resume stopped process
+kill -HUP <PID>                  # Send SIGHUP (often for config reload)
+kill -TERM <PID>                 # Send default signal (SIGTERM)
+````
+Priority and Nice Values
+````
+nice -n 10 command               # Run command with adjusted priority
+nice --20 command                # Run with lowest priority
+renice -n 10 -p <PID>            # Change priority of a running process
+top -p <PID>                     # Monitor specific PID in top
+ionice -c2 -n7 command           # Set IO scheduling class and priority
+chrt -f 99 command               # Run command with real-time priority
+schedtool -R -p 99 <PID>         # Set real-time scheduling (if installed)
+ps -eo pid,ni,cmd | grep <PID>   # Show nice value of process
+uptime                           # See system load (affects scheduling)
+vmstat 1                         # View processes waiting and sleeping
+````
+Advanced & Miscellaneous Tools
+````
+strace -p <PID>                  # Trace system calls
+lsof -p <PID>                    # List files opened by process
+gdb -p <PID>                     # Debug a running process
+cat /proc/<PID>/status           # Show status info of a process
+cat /proc/<PID>/cmdline          # Command line of a process
+cat /proc/<PID>/io               # I/O stats of a process
+cat /proc/<PID>/sched            # Scheduling info
+watch "ps -ef | grep nginx"      # Monitor a specific process live
+top -d 1                         # Refresh process view every second
+atop                             # Advanced process/resource monitor (if installed)
 ````
  Systemctl (Service Control)
  
@@ -452,6 +614,30 @@ passwd root
 
 ````
 sosreport                    # Collect system diagnostic data (RedHat-based)
+````
+🌍 Environment Variables
+
+````
+printenv                     # Print all env vars
+echo $PATH                   # Show PATH variable
+export VAR=value             # Set variable
+unset VAR                    # Unset variable
+env                          # Run command with environment
+````
+🔐 Special Permissions
+````
+chmod u+s file               # SetUID
+chmod g+s dir                # SetGID
+chmod +t dir                 # Sticky bit
+````
+🧩 Terminal Multiplexers
+````
+screen                      # Start screen session
+screen -r                   # Reattach to screen
+tmux                        # Start tmux session
+tmux ls                     # List tmux sessions
+tmux attach-session -t 0    # Attach to session 0
+tmux new -s mysession        # Create new session
 ````
 
 
