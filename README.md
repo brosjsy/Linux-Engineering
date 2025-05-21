@@ -683,6 +683,107 @@ init 0                       # Another shutdown method
 reboot                       # Reboot the system
 halt                         # Halt the system
 journalctl                   # View systemd logs
+# 1. Show memory usage in human-readable format
+free -h
+# 2. Display CPU and memory usage dynamically
+top
+# 3. Interactive real-time process viewer
+htop
+# 4. Show CPU statistics
+mpstat -P ALL 1 5
+# 5. Show virtual memory statistics
+vmstat 2 5
+# 6. Display I/O statistics per device
+iostat -dx 2 3
+# 7. Show disk usage in human-readable format
+df -h
+# 8. Show inodes usage
+df -i
+# 9. List disk partition usage
+lsblk
+# 10. Check block device stats
+iostat
+# 11. Monitor TCP/UDP network connections
+netstat -tulpn
+# 12. List open files and network connections
+lsof -i
+# 13. Monitor network bandwidth
+iftop
+# 14. Real-time network stats
+nload
+# 15. Show network interfaces and their states
+ip addr
+# 16. Show routing table
+ip route
+# 17. Display active internet connections
+ss -tulnp
+# 18. Ping a host and show packet loss
+ping -c 4 8.8.8.8
+# 19. Trace route to host
+traceroute google.com
+# 20. Monitor kernel messages
+dmesg | tail
+# 21. Watch CPU frequency in real-time
+watch "lscpu | grep MHz"
+# 22. Show uptime and load average
+uptime
+# 23. Display system boot time
+who -b
+# 24. Show currently logged-in users
+who
+# 25. View system logs (journalctl)
+journalctl -xe
+# 26. View logins, shutdowns, reboots
+last -x
+# 27. Monitor user sessions
+w
+# 28. Display process tree
+pstree
+# 29. List running processes sorted by memory
+ps aux --sort=-%mem | head
+# 30. Show top processes by CPU
+ps aux --sort=-%cpu | head
+# 31. Show processes in tree structure
+ps -ejH
+# 32. Show disk I/O per process
+iotop
+# 33. Show real-time file system usage
+watch df -h
+# 34. Monitor a file for changes
+tail -f /var/log/syslog
+# 35. Real-time load and CPU utilization
+glances
+# 36. Monitor per-process CPU usage over time
+pidstat 1 5
+# 37. Show number of running processes
+ps -e | wc -l
+# 38. List zombie processes
+ps aux | awk '{ if ($8 == "Z") print $0; }'
+# 39. Show system temperature
+sensors
+# 40. Show top 10 memory consuming apps
+ps aux --sort=-%mem | head -n 11
+# 41. Show swap usage
+swapon --show
+# 42. Show disk space used by a directory
+du -sh /var
+# 43. List largest files in root directory
+find / -type f -exec du -Sh {} + | sort -rh | head -n 10
+# 44. Count TCP connections
+netstat -an | grep -c ESTABLISHED
+# 45. Monitor connections per port
+ss -s
+# 46. Get system hardware summary
+lshw -short
+# 47. View BIOS and motherboard info
+dmidecode | less
+# 48. Show PCI devices
+lspci
+# 49. Show USB devices
+lsusb
+# 50. List available systemd services
+systemctl list-units --type=service --state=running
+
 ````
 🖥️ Hostname & System Info
 ````
