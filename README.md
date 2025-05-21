@@ -282,3 +282,158 @@ truncate -s 1K data.txt         # Set size to 1KB
 cat part1.txt part2.txt > full.txt      # Combine
 split -b 1M bigfile.txt chunk_          # Split into 1MB files
 ````
+⚙️ Linux System Administration & Utilities
+This section covers essential Linux system administration tools, from user management to process scheduling and system monitoring. Commands are presented with descriptions and practical examples.
+
+✍️ Linux File Editors
+ vi vs vim
+vi is the classic text editor; vim is an improved version.
+
+vim supports syntax highlighting, plugins, and more user-friendly operations.
+````
+vi filename           # Open or create a file
+i                     # Switch to insert mode
+:w                    # Save file
+:q                    # Quit vi
+:wq                   # Save and quit
+dd                    # Delete a line
+````
+✂️ Text Stream Editors
+🔹 sed Command (Stream Editor)
+````      
+sed 's/original/replacement/' file.txt   # Replace first occurrence in each line
+sed -n 2,4p file.txt                      # Print lines 2 to 4
+sed '/pattern/d' file.txt                # Delete lines matching pattern
+sed -i 's/old/new/g' file.txt            # In-place substitution
+sed '2d' file.txt                        # Delete 2nd line
+sed -n '/pattern/p' file.txt             # Print lines matching pattern
+````
+
+👤 User Account Management
+🔹 Managing Users
+````
+useradd username              # Create new user
+passwd username               # Set user password
+usermod -aG group username    # Add user to a group
+id username                   # Check user ID and group
+whoami                        # Show current user
+userdel username              # Delete a user
+````
+⏳ Password Aging
+````
+chage -l username             # View password aging info
+chage -M 90 username          # Set max password age
+chage -m 7 username           # Set min password age
+chage -W 10 username          # Set warning days before expiration
+chage -E 2025-12-31 username  # Expiry date
+passwd -x 90 username         # Another way to set max age
+````
+ Switching Users and Using Sudo
+ ````
+chage -l username             # View password aging info
+chage -M 90 username          # Set max password age
+chage -m 7 username           # Set min password age
+chage -W 10 username          # Set warning days before expiration
+chage -E 2025-12-31 username  # Expiry date
+passwd -x 90 username         # Another way to set max age
+````
+👀 Monitor and Talk to Users
+````
+who                          # List users currently logged in
+w                            # See what users are doing
+id                           # Show user ID info
+last                         # Show last login of users
+write username               # Send message to a user
+wall "Message"               # Broadcast message to all users
+````
+🔍 System Utility Commands
+This are the day to days activities that will be run on linux system 
+````
+date                         # Show current date/time
+uptime                       # System load and uptime
+hostname                     # System hostname
+uname -a                     # Kernel and system info
+which bash                   # Show path of executable
+cal                          # Calendar
+bc                           # Command line calculator
+````
+Process Management
+````
+ps aux                       # Show all running processes
+top                          # Real-time process monitoring
+kill PID                     # Kill process by PID
+killall process_name         # Kill process by name
+bg                           # Send job to background
+fg                           # Bring background job to foreground
+````
+ Systemctl (Service Control)
+ 
+ ````
+systemctl start service      # Start service
+systemctl stop service       # Stop service
+systemctl status service     # Check service status
+systemctl enable service     # Enable service at boot
+systemctl disable service    # Disable from boot
+systemctl restart service    # Restart service
+````
+🔹 Process Signals
+````
+kill -9 PID                  # SIGKILL – force terminate
+kill -15 PID                 # SIGTERM – request terminate
+trap "command" SIGNAL        # Trap signal and run a command
+pkill -SIGINT process_name   # Send specific signal to process
+````
+⏰ Scheduling Jobs
+🔹 crontab
+````
+crontab -e                   # Edit user cron jobs
+crontab -l                   # List current cron jobs
+crontab -r                   # Remove all cron jobs
+````
+🔹 at command
+````
+at 5pm                       # Schedule job at 5 PM
+atq                          # Show pending at jobs
+atrm 2                       # Remove job ID 2
+````
+Additional Cron Directories
+````
+/etc/cron.hourly/
+/etc/cron.daily/
+/etc/cron.weekly/
+/etc/cron.monthly/
+````
+📊 System Monitoring
+````
+df -h                        # Disk space usage
+dmesg | less                 # Kernel ring buffer
+iostat 1                     # CPU and I/O usage
+netstat -tuln                # Network sockets and ports
+free -h                      # Memory usage
+top                          # Interactive process view
+````
+🧾 System Logs & Maintenance
+````
+tail -f /var/log/syslog      # Real-time log monitoring
+shutdown -h now              # Shutdown immediately
+init 0                       # Another shutdown method
+reboot                       # Reboot the system
+halt                         # Halt the system
+journalctl                   # View systemd logs
+````
+🖥️ Hostname & System Info
+````
+hostnamectl set-hostname newname    # Change hostname
+uname -r                            # Kernel version
+dmidecode -t system                 # BIOS/hardware info
+arch                                # System architecture
+````
+Terminal Tips 
+````
+clear                        # Clear terminal screen
+exit                         # Exit shell session
+script                       # Record terminal session
+CTRL+C                       # Kill current command
+CTRL+Z                       # Suspend current command
+CTRL+D                       # End of input or logout
+````
