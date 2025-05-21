@@ -437,3 +437,22 @@ CTRL+C                       # Kill current command
 CTRL+Z                       # Suspend current command
 CTRL+D                       # End of input or logout
 ````
+
+🔐 Root Password Recovery
+Reboot into single-user mode
+Mount the system with write permissions:
+````
+mount -o remount,rw /
+````
+Reset password:
+````
+passwd root
+````
+🧾 SOS Report (System Diagnostic Report)
+
+````
+sosreport                    # Collect system diagnostic data (RedHat-based)
+````
+
+
+
