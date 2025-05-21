@@ -551,6 +551,107 @@ pkill -SIGINT process_name   # Send specific signal to process
 crontab -e                   # Edit user cron jobs
 crontab -l                   # List current cron jobs
 crontab -r                   # Remove all cron jobs
+# 1. Update package list daily at 5 AM
+0 5 * * * apt update
+# 2. Upgrade system packages every Sunday at 4 AM
+0 4 * * 0 apt upgrade -y
+# 3. Check system disk usage every hour
+0 * * * * df -h > /home/juwop/disk_usage.txt
+# 4. Save running processes list every 2 hours
+0 */2 * * * ps aux > /home/juwop/ps_report.txt
+# 5. Check memory status every 6 hours
+0 */6 * * * free -h > /home/juwop/memory_status.txt
+# 6. Save list of logged-in users every 15 min
+*/15 * * * * who > /home/juwop/loggedin_users.txt
+# 7. Run fail2ban log check nightly
+0 1 * * * fail2ban-client status > /home/juwop/fail2ban_status.txt
+# 8. Monitor top 10 memory-consuming processes
+*/30 * * * * ps aux --sort=-%mem | head -n 11 > /home/juwop/top_mem.txt
+# 9. Clean apt cache every Friday at 3 AM
+0 3 * * 5 apt clean
+# 10. Reboot system monthly on the 1st at 4 AM
+0 4 1 * * /sbin/reboot
+# 11. Backup /etc directory daily at 2 AM
+0 2 * * * tar -czf /backup/etc_backup_$(date +\%F).tar.gz /etc
+# 12. Backup home directory weekly
+0 3 * * 6 tar -czf /backup/home_backup.tar.gz /home/juwop
+# 13. Rsync data to remote server daily
+30 1 * * * rsync -avz /home/juwop user@server:/backup/
+# 14. Backup MySQL database every day at midnight
+0 0 * * * mysqldump -u root -pYourPass dbname > /backup/db.sql
+# 15. Clear backup older than 30 days
+0 5 * * * find /backup -type f -mtime +30 -delete
+# 16. Copy logs to external drive weekly
+0 6 * * 0 cp /var/log/*.log /mnt/usbdrive/logs/
+# 17. Compress Apache logs daily
+0 23 * * * gzip /var/log/apache2/*.log
+# 18. Backup crontab list weekly
+0 4 * * 7 crontab -l > /backup/cron.bak
+# 19. Archive system logs every day at 11 PM
+0 23 * * * tar -czf /logs/$(date +\%F)_logs.tar.gz /var/log/
+# 20. Create system image monthly
+0 1 1 * * dd if=/dev/sda of=/backup/system.img
+# 21. Delete temp files every day
+0 2 * * * rm -rf /tmp/*
+# 22. Find and delete old logs over 15 days
+0 3 * * * find /var/log -name "*.log" -mtime +15 -exec rm -f {} \;
+# 23. Move files from Downloads to Archive every 3 days
+0 10 */3 * * mv ~/Downloads/* ~/Archive/
+# 24. Empty trash weekly
+0 8 * * 6 rm -rf ~/.local/share/Trash/*
+# 25. Change file permission on logs every night
+0 1 * * * chmod 640 /var/log/*.log
+# 26. Rename log files weekly
+0 0 * * 0 find /var/log -name "*.log" -exec mv {} {}.bak \;
+# 27. Monitor file changes using inotifywait
+*/10 * * * * inotifywait -q -e modify /etc/passwd >> /home/juwop/passwd_changes.log
+# 28. Remove orphan packages monthly
+0 3 1 * * apt autoremove -y
+# 29. Set permissions on home directory daily
+0 5 * * * chmod 755 /home/juwop
+# 30. Clean cache every 2 days
+0 4 */2 * * rm -rf ~/.cache/*
+# 31. Email system load average
+*/30 * * * * uptime | mail -s "Load Avg" your@email.com
+# 32. Notify disk usage over 90%
+*/15 * * * * df -H | awk '$5+0 > 90 {print $0}' | mail -s "Disk Alert" your@email.com
+# 33. Alert for SSH login
+* * * * * grep "Accepted" /var/log/auth.log | tail -1 | mail -s "SSH Login" your@email.com
+# 34. Send system reboot alert
+@reboot echo "System Rebooted at $(date)" | mail -s "Reboot Alert" your@email.com
+# 35. Ping server hourly and report if down
+0 * * * * ping -c 4 google.com || echo "Ping failed" | mail -s "Ping Alert" your@email.com
+# 36. Alert on high CPU load
+*/5 * * * * uptime | awk '{if ($10 > 2.00) print $0}' | mail -s "CPU Load High" your@email.com
+# 37. Mail current user activity every 3 hrs
+0 */3 * * * w | mail -s "User Activity" your@email.com
+# 38. Log sudo usage
+*/10 * * * * cat /var/log/auth.log | grep sudo >> /home/juwop/sudo_usage.log
+# 39. Log firewall activity
+0 * * * * journalctl -u ufw > /home/juwop/ufw.log
+# 40. Track open ports every 2 hours
+0 */2 * * * netstat -tuln > /home/juwop/open_ports.txt
+# 41. Open terminal with message (X server only)
+0 9 * * * DISPLAY=:0 xterm -e 'echo "Good morning!"'
+# 42. Play music every day at 7 AM
+0 7 * * * mplayer /home/juwop/music/alarm.mp3
+# 43. Run Python script every 10 minutes
+*/10 * * * * python3 /home/juwop/scripts/monitor.py
+# 44. Execute bash script on weekdays
+0 6 * * 1-5 /home/juwop/scripts/weekday_task.sh
+# 45. Run cleanup on last day of month
+59 23 28-31 * * [ "$(date +\%d -d tomorrow)" = "01" ] && /home/juwop/cleanup.sh
+# 46. Set brightness to low at night
+0 20 * * * xrandr --output eDP-1 --brightness 0.3
+# 47. Remind to take a break every 2 hours
+0 */2 * * * notify-send "Take a break"
+# 48. Restart network interface every midnight
+0 0 * * * systemctl restart NetworkManager
+# 49. Run malware scan daily
+30 1 * * * clamscan -r /home/juwop > /home/juwop/malware_report.txt
+# 50. Log battery status every hour
+0 * * * * upower -i /org/freedesktop/UPower/devices/battery_BAT0 > ~/battery_log.txt
+
 ````
 🔹 at command
 ````
