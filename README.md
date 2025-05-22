@@ -916,6 +916,30 @@ for i in {1..3}; do df -h; sleep 2; done
 for ip in 8.8.8.8 1.1.1.1; do ping -c 1 $ip; done
 
 ````
+🔄 while loop Scripts
+````
+# Countdown
+count=5; while [ $count -gt 0 ]; do echo $count; ((count--)); done
 
+# Repeat uptime
+while true; do uptime; sleep 3; done
+
+# Exit loop on keyword
+while true; do read -p "exit?: " input; [ "$input" = "exit" ] && break; done
+`````
+🧱 case Statement
+````
+# Menu-driven script
+read -p "1.Date 2.Uptime: " choice
+case $choice in 1) date ;; 2) uptime ;; *) echo "Invalid" ;; esac
+
+# Service check
+read -p "Enter service: " svc
+case $svc in sshd|httpd) systemctl status $svc ;; *) echo "Unknown" ;; esac
+
+# Confirm input
+read -p "Y/N? " ans
+case $ans in [Yy]*) echo "Yes" ;; [Nn]*) echo "No" ;; *) echo "Invalid" ;; esac
+````
 
 
