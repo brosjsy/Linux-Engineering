@@ -842,5 +842,80 @@ tmux attach-session -t 0    # Attach to session 0
 tmux new -s mysession        # Create new session
 ````
 
+# 📁 Linux Engineering Portfolio - Phase 6: Shell and Kernel Concepts
+
+This section covers foundational Linux administration concepts around the kernel, shell, scripting, and automating Linux system tasks. All scripts are practical and tailored for what i will be doing as a system administrators.
+
+---
+
+## 🧠 What is Kernel?
+The **kernel** is the core of a Linux OS that manages system resources and communication between hardware and software.
+
+---
+
+## 💬 What is Shell?
+The **shell** is a command-line interface (CLI) to interact with the OS. Examples include bash, zsh, and sh.
+
+---
+
+## 🧪 Types of Shells
+- **Bash** – Default in most distros.
+- **sh** – Original Unix shell.
+- **zsh** – Extended features.
+- **ksh** – Korn shell.
+- **csh** – C-like syntax.
+
+---
+
+## 📜 Shell Scripting
+Automate tasks using command sequences saved in `.sh` files.
+
+### ➕ Getting Started
+
+mkdir ~/Josephscripts
+cd /Josephscripts
+nano ~/scripts/sample.sh
+chmod +x ~/scripts/sample.sh
+./sample.sh
+
+````
+#!/bin/bash
+# Display current users
+who
+# Show date and time
+echo "Today is: $(date)"
+# Check disk usage
+df -h
+````
+📥 Input/Output Scripts
+````
+# Prompt user input
+read -p "Enter username: " user
+echo "User is $user"
+# Redirect output to a file
+ls -l > output.txt
+# Display file content
+cat output.txt
+````
+❓ if-then Scripts
+````
+# File existence check
+if [ -f /etc/passwd ]; then echo "Exists"; fi
+# Check if user is root
+[ "$USER" == "root" ] && echo "Root user" || echo "Not root"
+# Check if sshd is running
+systemctl is-active --quiet sshd && echo "Running" || echo "Stopped"
+````
+🔁 for loop Scripts
+````
+# Loop users
+for user in alice bob; do echo $user; done
+# Repeated disk checks
+for i in {1..3}; do df -h; sleep 2; done
+# Ping servers
+for ip in 8.8.8.8 1.1.1.1; do ping -c 1 $ip; done
+
+````
+
 
 
