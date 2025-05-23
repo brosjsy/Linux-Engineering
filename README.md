@@ -59,7 +59,7 @@ Welcome to my public GitHub portfolio where I document my learning journey as a 
 
 ---
 
-## 📸 Taking Snapshots (Best Practice)
+### 📸 Taking Snapshots (Best Practice)
 
 Snapshots provide a critical **restore point** before making risky system changes. They help maintain a clean rollback path in case something breaks during updates or configuration.
 
@@ -79,7 +79,7 @@ Snapshots provide a critical **restore point** before making risky system change
 
 ---
 
-## 📁 Linux Filesystem & Navigation
+### 📁 Linux Filesystem & Navigation
 
 ### ✅ Topics Covered
 
@@ -139,7 +139,7 @@ unzip archive.zip -d target_directory/       # Extract to specific directory
 unzip -l archive.zip                         # List contents of zip
 Files and Permissions
 ````
-## 📁 Linux Files and Directory Permissions (Letters)
+### 📁 Linux Files and Directory Permissions (Letters)
 
 Linux permissions are represented by letters:
 
@@ -155,61 +155,61 @@ chmod u+x script.sh     # Add execute permission to the user
 chmod g-w file.txt      # Remove write from group
 chmod o+r file.txt      # Add read for others
 ````
-## 🔢 Files and Directory Permissions (Numeric)
+### 🔢 Files and Directory Permissions (Numeric)
 Each permission has a value: r = 4, w = 2, x = 1
 ````
 chmod 755 script.sh     # rwxr-xr-x
 chmod 644 file.txt      # rw-r--r--
 ````
-👥 File Ownership Commands
+### 👥File Ownership Commands
 Check ownership and change ownership
 ````
 ls -l
 chown newuser file.txt         # Change owner
 chown newuser:newgroup file.txt # Change owner and group
 ````
-## Access Control List (ACL)
+### Access Control List (ACL)
 ACL provides more fine-grained permission control.
 Enable ACL on filesystem:
 ````mount -o remount,acl / ````
 Set ACL:
 ````setfacl -m u:john:rwx file.txt````
 ````getfacl file.txt````
-## 🧭 Navigation & Productivity 🆘 Help Commands
+### 🧭 Navigation & Productivity 🆘 Help Commands
 ````
 man chmod
 chmod --help
 info chmod
 ````
-## ⌨️ TAB Completion & History
+### ⌨️ TAB Completion & History
 Use TAB to auto-complete paths and commands.
 
 Press ↑ (Up arrow) to navigate command history.
 
-## 📝 Adding Text to Files
+### 📝 Adding Text to Files
 ````
 echo "Hello, world" > hello.txt
 cat > note.txt
 ````
-##🔁 Input/Output Redirection
+### 🔁 Input/Output Redirection
 ````
 📤 Standard Output to File
 
 echo "Output" > out.txt      # Overwrite
 echo "More" >> out.txt       # Append
 ````
-##📋 Using tee to Save and Display
+### 📋 Using tee to Save and Display
 
 ````
 echo "Log line" | tee logfile.txt
 ````
-##🔗 Pipes
+### 🔗 Pipes
 
 The | Pipes command is used for chaining or channelling initial command to produce a fine output 
 ````
 ls -l | grep ".txt"
 ````
-##🛠️ File Operations
+### 🛠️ File Operations
 
 🧹 File Maintenance Commands some of the commands here are used to create new file, remove or delete a file , move a file and even copy a file
 ````
@@ -219,7 +219,7 @@ ls -l | grep ".txt"
     cp file.txt backup.txt
  ````   
 
-##🔍 File Viewing & Text Processing
+### 🔍 File Viewing & Text Processing
 📖 File Display Commands
 ````
 cat file.txt
@@ -228,38 +228,37 @@ head -n 5 file.txt
 tail -f logfile.txt
 ````
 
-##🧹 Filters (Text Processors)
-  ✂️ cut
+###🧹 Filters (Text Processors)
+###  ✂️ cut
 ````
 cut -d ":" -f1 /etc/passwd
 ````
-  📄 awk
+### 📄 awk
 ````
 awk '{print $1, $3}' users.txt
 ````
-🔍 grep / egrep
+### 🔍 grep / egrep
 ````
 grep "error" logfile.txt
 egrep "fail|error" logfile.txt
 ````
-🧮 wc (Word Count)
+### 🧮 wc (Word Count)
 ````
 wc file.txt
 wc -l file.txt   # Line count
 ````
-📑 sort, uniq
+### 📑 sort, uniq
 ````
 sort names.txt | uniq
 sort -u names.txt
 ````
-📂 Compare Files
+### 📂 Compare Files
 ````
 diff file1.txt file2.txt
 cmp file1.txt file2.txt
 ````
-📦 Archiving and Compression
-🗜️ Compress & Uncompress
-bash
+### 📦 Archiving and Compression
+### 🗜️ Compress & Uncompress
 ````
 gzip file.txt
 gunzip file.txt.gz
@@ -272,24 +271,24 @@ bunzip2 file.txt.bz2
 xz file.txt
 unxz file.txt.xz
 ````
-  ✂️ Truncate File Size
+###  ✂️ Truncate File Size
 ````
 truncate -s 0 logfile.txt       # Empties file
 truncate -s 1K data.txt         # Set size to 1KB
 ````
-  🧩 File Combination and Splitting
+### 🧩 File Combination and Splitting
 ````
 cat part1.txt part2.txt > full.txt      # Combine
 split -b 1M bigfile.txt chunk_          # Split into 1MB files
 ````
-⚙️ Linux System Administration & Utilities
+### ⚙️ Linux System Administration & Utilities
 This section covers essential Linux system administration tools, from user management to process scheduling and system monitoring. Commands are presented with descriptions and practical examples.
 
 ✍️ Linux File Editors
  vi vs vim
 vi is the classic text editor; vim is an improved version.
 
-vim supports syntax highlighting, plugins, and more user-friendly operations.
+### vim supports syntax highlighting, plugins, and more user-friendly operations.
 ````
 vi filename           # Open or create a file
 i                     # Switch to insert mode
@@ -326,8 +325,8 @@ vim -p file1 file2                   # Open files in tabs
 vim -u NONE filename.txt             # Open vim without plugins/settings
 
 ````
-✂️ Text Stream Editors
-🔹 sed Command (Stream Editor)
+### ✂️ Text Stream Editors
+### 🔹 sed Command (Stream Editor)
 ````      
 sed 's/original/replacement/' file.txt   # Replace first occurrence in each line
 sed -n 2,4p file.txt                      # Print lines 2 to 4
@@ -348,8 +347,8 @@ sed -i '3a\Appended Line' file.txt   # Append after line 3
 
 ````
 
-👤 User Account Management
-🔹 Managing Users
+### 👤 User Account Management
+### 🔹 Managing Users
 ````
 useradd username              # Create new user
 passwd username               # Set user password
@@ -370,7 +369,7 @@ groups juwop                        # Show user's groups
 chage -l juwop                      # Show user password aging info
 
 ````
-⏳ Password Aging
+### ⏳ Password Aging
 ````
 chage -l username             # View password aging info
 chage -M 90 username          # Set max password age
@@ -379,7 +378,7 @@ chage -W 10 username          # Set warning days before expiration
 chage -E 2025-12-31 username  # Expiry date
 passwd -x 90 username         # Another way to set max age
 ````
- Switching Users and Using Sudo
+### Switching Users and Using Sudo
  ````
 chage -l username             # View password aging info
 chage -M 90 username          # Set max password age
@@ -395,7 +394,7 @@ whoami                             # Display current user
 sudo -i                            # Start root login shell
 
 ````
-👀 Monitor and Talk to Users
+### 👀 Monitor and Talk to Users
 ````
 who                          # List users currently logged in
 w                            # See what users are doing
@@ -455,7 +454,7 @@ sudo grep juwop /var/log/auth.log  # Auth logs (Debian/Ubuntu)
 sudo grep juwop /var/log/secure    # Auth logs (RHEL/CentOS)
 
 ````
-🔍 System Utility Commands
+### 🔍 System Utility Commands
 This are the day to days activities that will be run on linux system 
 ````
 date                         # Show current date/time
@@ -466,7 +465,7 @@ which bash                   # Show path of executable
 cal                          # Calendar
 bc                           # Command line calculator
 ````
-Process Management
+### Process Management
 ````
 ps aux                       # Show all running processes
 top                          # Real-time process monitoring
@@ -476,7 +475,7 @@ bg                           # Send job to background
 fg                           # Bring background job to foreground
 ````
 
-Foreground & Background Process Control
+### Foreground & Background Process Control
 ````
 sleep 60 &                       # Run command in background
 bg                               # Resume stopped job in background
@@ -489,7 +488,7 @@ command &>/dev/null &           # Run silently in background
 wait                             # Wait for background jobs to finish
 jobs -l                          # Jobs with PIDs
 ````
-Killing & Signaling Processes
+### Killing & Signaling Processes
 ````
 kill <PID>                       # Terminate a process by PID
 kill -9 <PID>                    # Force kill (SIGKILL)
@@ -502,7 +501,7 @@ kill -CONT <PID>                 # Resume stopped process
 kill -HUP <PID>                  # Send SIGHUP (often for config reload)
 kill -TERM <PID>                 # Send default signal (SIGTERM)
 ````
-Priority and Nice Values
+### Priority and Nice Values
 ````
 nice -n 10 command               # Run command with adjusted priority
 nice --20 command                # Run with lowest priority
@@ -515,7 +514,7 @@ ps -eo pid,ni,cmd | grep <PID>   # Show nice value of process
 uptime                           # See system load (affects scheduling)
 vmstat 1                         # View processes waiting and sleeping
 ````
-Advanced & Miscellaneous Tools
+### Advanced & Miscellaneous Tools
 ````
 strace -p <PID>                  # Trace system calls
 lsof -p <PID>                    # List files opened by process
@@ -528,7 +527,7 @@ watch "ps -ef | grep nginx"      # Monitor a specific process live
 top -d 1                         # Refresh process view every second
 atop                             # Advanced process/resource monitor (if installed)
 ````
- Systemctl (Service Control)
+### Systemctl (Service Control)
  
  ````
 systemctl start service      # Start service
@@ -538,15 +537,15 @@ systemctl enable service     # Enable service at boot
 systemctl disable service    # Disable from boot
 systemctl restart service    # Restart service
 ````
-🔹 Process Signals
+### 🔹 Process Signals
 ````
 kill -9 PID                  # SIGKILL – force terminate
 kill -15 PID                 # SIGTERM – request terminate
 trap "command" SIGNAL        # Trap signal and run a command
 pkill -SIGINT process_name   # Send specific signal to process
 ````
-⏰ Scheduling Jobs
-🔹 crontab
+### ⏰ Scheduling Jobs
+### 🔹 crontab
 ````
 crontab -e                   # Edit user cron jobs
 crontab -l                   # List current cron jobs
@@ -653,20 +652,20 @@ crontab -r                   # Remove all cron jobs
 0 * * * * upower -i /org/freedesktop/UPower/devices/battery_BAT0 > ~/battery_log.txt
 
 ````
-🔹 at command
+### 🔹 at command
 ````
 at 5pm                       # Schedule job at 5 PM
 atq                          # Show pending at jobs
 atrm 2                       # Remove job ID 2
 ````
-Additional Cron Directories
+### Additional Cron Directories
 ````
 /etc/cron.hourly/
 /etc/cron.daily/
 /etc/cron.weekly/
 /etc/cron.monthly/
 ````
-📊 System Monitoring
+### 📊 System Monitoring
 ````
 df -h                        # Disk space usage
 dmesg | less                 # Kernel ring buffer
@@ -675,7 +674,7 @@ netstat -tuln                # Network sockets and ports
 free -h                      # Memory usage
 top                          # Interactive process view
 ````
-🧾 System Logs & Maintenance
+### 🧾 System Logs & Maintenance
 ````
 tail -f /var/log/syslog      # Real-time log monitoring
 shutdown -h now              # Shutdown immediately
@@ -785,14 +784,14 @@ lsusb
 systemctl list-units --type=service --state=running
 
 ````
-🖥️ Hostname & System Info
+### 🖥️ Hostname & System Info
 ````
 hostnamectl set-hostname newname    # Change hostname
 uname -r                            # Kernel version
 dmidecode -t system                 # BIOS/hardware info
 arch                                # System architecture
 ````
-Terminal Tips 
+### Terminal Tips 
 ````
 clear                        # Clear terminal screen
 exit                         # Exit shell session
@@ -802,22 +801,20 @@ CTRL+Z                       # Suspend current command
 CTRL+D                       # End of input or logout
 ````
 
-🔐 Root Password Recovery
+### 🔐 Root Password Recovery
+````
 Reboot into single-user mode
 Mount the system with write permissions:
-````
 mount -o remount,rw /
-````
 Reset password:
-````
 passwd root
 ````
-🧾 SOS Report (System Diagnostic Report)
+### 🧾 SOS Report (System Diagnostic Report)
 
 ````
 sosreport                    # Collect system diagnostic data (RedHat-based)
 ````
-🌍 Environment Variables
+### 🌍 Environment Variables
 
 ````
 printenv                     # Print all env vars
@@ -826,13 +823,13 @@ export VAR=value             # Set variable
 unset VAR                    # Unset variable
 env                          # Run command with environment
 ````
-🔐 Special Permissions
+### 🔐 Special Permissions
 ````
 chmod u+s file               # SetUID
 chmod g+s dir                # SetGID
 chmod +t dir                 # Sticky bit
 ````
-🧩 Terminal Multiplexers
+### 🧩 Terminal Multiplexers
 ````
 screen                      # Start screen session
 screen -r                   # Reattach to screen
@@ -842,7 +839,7 @@ tmux attach-session -t 0    # Attach to session 0
 tmux new -s mysession        # Create new session
 ````
 
-# 📁 Linux Engineering Portfolio - Phase 6: Shell and Kernel Concepts
+### 📁 Shell Scripting
 
 This section covers foundational Linux administration concepts around the kernel, shell, scripting, and automating Linux system tasks. All scripts are practical and tailored for what i will be doing as a system administrators.
 
@@ -851,7 +848,6 @@ This section covers foundational Linux administration concepts around the kernel
 ## 🧠 What is Kernel?
 The **kernel** is the core of a Linux OS that manages system resources and communication between hardware and software.
 
----
 
 ## 💬 What is Shell?
 The **shell** is a command-line interface (CLI) to interact with the OS. Examples include bash, zsh, and sh.
@@ -867,7 +863,7 @@ The **shell** is a command-line interface (CLI) to interact with the OS. Example
 
 ---
 
-## 📜 Shell Scripting
+### 📜 Shell Scripting
 Automate tasks using command sequences saved in `.sh` files.
 
 ### ➕ Getting Started
@@ -887,7 +883,7 @@ echo "Today is: $(date)"
 # Check disk usage
 df -h
 ````
-📥 Input/Output Scripts
+### 📥 Input/Output Scripts
 ````
 # Prompt user input
 read -p "Enter username: " user
@@ -897,7 +893,7 @@ ls -l > output.txt
 # Display file content
 cat output.txt
 ````
-❓ if-then Scripts
+### ❓ if-then Scripts
 ````
 # File existence check
 if [ -f /etc/passwd ]; then echo "Exists"; fi
@@ -906,7 +902,7 @@ if [ -f /etc/passwd ]; then echo "Exists"; fi
 # Check if sshd is running
 systemctl is-active --quiet sshd && echo "Running" || echo "Stopped"
 ````
-🔁 for loop Scripts
+### 🔁 for loop Scripts
 ````
 # Loop users
 for user in alice bob; do echo $user; done
@@ -916,7 +912,7 @@ for i in {1..3}; do df -h; sleep 2; done
 for ip in 8.8.8.8 1.1.1.1; do ping -c 1 $ip; done
 
 ````
-🔄 while loop Scripts
+### 🔄 while loop Scripts
 ````
 # Countdown
 count=5; while [ $count -gt 0 ]; do echo $count; ((count--)); done
@@ -927,7 +923,7 @@ while true; do uptime; sleep 3; done
 # Exit loop on keyword
 while true; do read -p "exit?: " input; [ "$input" = "exit" ] && break; done
 `````
-🧱 case Statement
+### 🧱 case Statement
 ````
 # Menu-driven script
 read -p "1.Date 2.Uptime: " choice
