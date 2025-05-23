@@ -1026,3 +1026,87 @@ tcpdump -w output.pcap              # Write capture to file
 tcpdump -r output.pcap              # Read from capture file
 ````
 🔐 Requires root privileges.
+
+🖧 Advanced Network Configuration & Utilities
+This section dives into setting up and managing NICs, configuring bonded interfaces, using modern network management tools, and downloading files via the terminal.
+
+1️⃣ Setting Up and Managing NICs (Network Interface Cards)
+🔧 Tasks and Commands:
+````
+ip a                                # Show all interfaces and IPs
+ip link set eth0 up                # Enable NIC
+ip link set eth0 down              # Disable NIC
+ip addr add 192.168.1.10/24 dev eth0   # Assign static IP
+ip route add default via 192.168.1.1   # Add default gateway
+ip link show                       # Show NIC status
+ethtool eth0                       # View NIC capabilities
+nmcli device status                # List devices
+nmcli con show                     # Show active connections
+````
+Setting Up and Configuring NIC Bonding
+NIC bonding allows multiple network interfaces to act as one for redundancy or throughput.
+
+✅ Steps (RHEL/CentOS-based):
+Install bonding kernel module:
+modprobe bonding
+echo "bonding" >> /etc/modules-load.d/bonding.conf
+2. Create bond configuration file:
+````
+nmcli con add type bond con-name bond0 ifname bond0 mode active-backup
+nmcli con add type ethernet con-name slave1 ifname eth0 master bond0
+nmcli con add type ethernet con-name slave2 ifname eth1 master bond0
+nmcli con up bond0
+````
+3. Verify
+````
+cat /proc/net/bonding/bond0
+ip a
+````
+ Modern Network Utilities
+🔹 nmtui – Text UI for Network Manager
+nmtui                              # Launch interactive menu
+````# Use arrows to edit or activate connections````
+nmcli – Command-Line Network Management
+````
+nmcli device                      # Show all network devices
+nmcli con show                    # Show all connections
+nmcli device connect eth0         # Connect interface
+nmcli device disconnect eth0      # Disconnect interface
+nmcli con mod eth0 ipv4.addresses 192.168.1.50/24
+nmcli con mod eth0 ipv4.gateway 192.168.1.1
+nmcli con mod eth0 ipv4.method manual
+nmcli con up eth0
+````
+🔹 nm-connection-editor – GUI Network Tool
+````nm-connection-editor              # Launch GUI connection editor (X required)
+````
+ # GNOME Network Settings
+Navigate: Settings > Network
+Manage Wi-Fi, VPN, Proxy, Ethernet
+Requires desktop environment.
+
+4️⃣ Downloading Files and Apps
+📥 wget – Non-interactive file downloader
+````
+wget http://example.com/file.iso             # Download file
+wget -c http://example.com/file.iso          # Resume interrupted download
+wget -O myfile.zip http://example.com/file.zip   # Rename output
+wget -r http://example.com/folder/           # Recursive download
+wget --limit-rate=100k http://example.com    # Limit bandwidth usage
+````
+🔁 curl – Transfer data using various protocols
+````
+curl http://example.com                      # Fetch and display content
+curl -O http://example.com/file.zip          # Download file (original name)
+curl -o newfile.txt http://example.com/page  # Rename output
+curl -L http://bit.ly/xyz                    # Follow redirects
+curl -I http://example.com                   # Show HTTP headers only
+curl -u user:pass http://example.com/secure  # Authenticated request
+````
+📶 ping – Check Internet or Host Connectivity
+````
+ping 8.8.8.8                                 # Test basic connectivity
+ping -c 5 google.com                         # Send 5 ICMP packets
+ping -s 64 example.com                       # Ping with specific packet size
+ping -W 3 yahoo.com                          # Set timeout
+````
