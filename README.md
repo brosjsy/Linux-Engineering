@@ -1110,3 +1110,123 @@ ping -c 5 google.com                         # Send 5 ICMP packets
 ping -s 64 example.com                       # Ping with specific packet size
 ping -W 3 yahoo.com                          # Set timeout
 ````
+🔌 Linux Network Tools: ss, FTP, SCP, rsync
+
+🔍 ss — Socket Statistics
+✅ What It Is:
+ss (socket statistics) is a tool used to investigate and display information about active socket connections on a Linux system.
+
+🛠️ Installation:
+
+# RHEL/CentOS
+````
+sudo yum install iproute -y
+````
+
+# Ubuntu/Debian
+````
+sudo apt install iproute2 -y
+````
+📥 Usage Examples:
+````
+ss -tuln                          # Show all listening TCP/UDP sockets
+ss -tn state established          # Show only established TCP connections
+ss -s                             # Show summary statistics of sockets
+ss -pl                            # Show processes using ports (requires sudo)
+ss -tn sport = :22                # Show connections on source port 22
+ss -t state time-wait             # Show TIME_WAIT connections (TCP cleanup)
+ss -tp | grep sshd                # Show connections related to sshd
+ss -4                             # Show only IPv4 sockets
+ss -6                             # Show only IPv6 sockets
+ss -nap                           # Show all with PID and app info
+````
+💡 Use Cases:
+Monitor open ports and their services
+Check for zombie TCP sessions
+Audit incoming SSH or web traffic
+Diagnose socket leaks
+
+📁 FTP — File Transfer Protocol (vsftpd)
+✅ What It Is:
+vsftpd (Very Secure FTP Daemon) is a secure and fast FTP server that allows file sharing using the FTP protocol.
+
+🛠️ Installation:
+````
+sudo yum install vsftpd -y
+sudo systemctl start vsftpd
+sudo systemctl enable vsftpd
+``````
+⚙️ Configuration: /etc/vsftpd/vsftpd.conf
+````
+anonymous_enable=NO
+local_enable=YES
+write_enable=YES
+chroot_local_user=YES
+````
+Restart the service:
+````
+sudo systemctl restart vsftpd
+````
+📥 Usage (Client Side):
+````
+ftp <hostname or IP>
+Name: user
+Password: ******
+
+get file.txt                         # Download file
+put upload.txt                       # Upload file
+lcd /path/to/local/dir               # Change local directory
+cd /path/on/server                   # Change server directory
+ls                                   # List remote files
+mget *.log                           # Download multiple files
+bye                                  # Exit FTP session
+````
+💡 Use Cases:
+Upload backups to centralized FTP servers
+Receive log files from remote clients
+Public anonymous download server (if configured)
+
+🔐 SCP — Secure Copy Protocol
+
+scp (Secure Copy) is a command-line utility that uses SSH to securely transfer files between computers.
+
+🛠️ Installation:
+````
+sudo yum install openssh-clients -y
+````
+📥 Usage:
+````
+scp file.txt user@remote:/path/             # Copy file to remote
+scp user@remote:/file.txt ./                # Copy file from remote
+scp -P 2222 file user@host:/dir/            # Use custom SSH port
+scp -r folder/ user@remote:/backup/         # Recursively copy folders
+scp -i ~/.ssh/id_rsa file user@host:/tmp/   # Use private key for auth
+````
+💡 Use Cases:
+Automated secure backups
+Transfer configuration files between servers
+Move scripts and deployment files in CI/CD pipelines
+
+🔁 rsync — Remote Sync Utility
+
+rsync is a powerful command-line utility for synchronizing files and directories between local and remote systems with efficiency.
+
+🛠️ Installation:
+````
+sudo yum install rsync -y
+````
+📥 Usage:
+````
+rsync -av file user@remote:/backup/         # Archive mode
+rsync -avz dir/ user@remote:/backup/        # Compress during transfer
+rsync -e ssh -av file user@remote:/path/    # Transfer over SSH
+rsync -av --delete src/ dest/               # Mirror (deletes extras)
+rsync -n -av file user@host:/path/          # Dry-run (simulate)
+rsync -av --progress bigfile remote:/dest/  # Show progress
+rsync -rzvh --exclude "*.log" src/ dest/    # Exclude patterns
+````
+💡 Use Cases:
+Mirror production directories to backup servers
+Push code to web servers
+Sync config files across a fleet of servers
+Efficient large file transfers with delta compression
