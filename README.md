@@ -941,5 +941,88 @@ case $svc in sshd|httpd) systemctl status $svc ;; *) echo "Unknown" ;; esac
 read -p "Y/N? " ans
 case $ans in [Yy]*) echo "Yes" ;; [Nn]*) echo "No" ;; *) echo "Invalid" ;; esac
 ````
+✅ Enabling Internet in Linux VM
+To enable internet in your Linux virtual machine:
+
+🛠️ For VMware:
+Open VM Settings → Go to Network Adapter.
+
+Choose NAT (Network Address Translation) to share host internet.
+
+Boot the VM and run:
+````
+nmcli connection show     # View network interfaces
+nmcli device connect eth0 # Connect the Ethernet adapter
+````
+🛠️ For VirtualBox:
+Settings → Network → Adapter 1
+
+Select: Attached to: NAT
+
+Boot the VM and run:
+
+````
+dhclient                   # Request IP address via DHCP
+ping -c 3 google.com       # Test internet connectivity
+````
+📂 Important Network Files
+````
+File	Purpose
+/etc/sysconfig/network-scripts/ifcfg-*	Interface configuration
+/etc/resolv.conf	DNS resolver settings
+/etc/hosts	Manual hostname-to-IP mapping
+/etc/hostname	Defines system hostname
+/etc/network/interfaces (Debian/Ubuntu)	Interface definitions
+````
+⚙️ Network Commands with Examples
+🔍 ping – Check Host Connectivity
+````
+ping google.com                      # Ping domain to check internet
+ping -c 4 8.8.8.8                    # Send 4 ICMP packets
+ping -i 2 1.1.1.1                    # Set interval to 2 seconds
+ping -s 100 www.example.com          # Send 100 bytes packets
+ping -W 5 google.com                 # Wait max 5 sec for a reply
+ping -b 192.168.1.255                # Ping broadcast address
+````
+📡 ifconfig – Interface Configuration
+````
+ifconfig                             # Show all interfaces
+ifconfig eth0                        # Show eth0 only
+ifconfig eth0 up                     # Enable eth0
+ifconfig eth0 down                   # Disable eth0
+ifconfig eth0 192.168.1.10 netmask 255.255.255.0 up   # Set static IP
+ifconfig eth0 promisc                # Enable promiscuous mode
+````
+🔔 ifconfig is deprecated; prefer ip a or nmcli on modern distros.
 
 
+🔁 ifup and ifdown – Enable/Disable Interfaces
+````
+ifup eth0                            # Bring eth0 up
+ifdown eth0                          # Bring eth0 down
+ifup enp0s3                          # Start interface by name
+ifdown enp0s3                        # Shut down that interface
+````
+
+📶 netstat – Network Statistics
+````
+netstat -tuln                       # List all listening ports
+netstat -rn                         # Show routing table
+netstat -ap                         # Show all connections + PIDs
+netstat -s                          # Show protocol statistics
+netstat -i                          # Display interface stats
+netstat -plunt                      # See ports + program names
+````
+✅ Use ss as a modern alternative: ss -tuln
+
+🧪 tcpdump – Network Packet Capture Tool
+````
+tcpdump -i eth0                     # Capture packets on eth0
+tcpdump -n -i eth0                  # Do not resolve IP/port to names
+tcpdump -c 10                       # Capture only 10 packets
+tcpdump port 80                     # Capture HTTP traffic
+tcpdump host 192.168.1.1            # Capture packets to/from a host
+tcpdump -w output.pcap              # Write capture to file
+tcpdump -r output.pcap              # Read from capture file
+````
+🔐 Requires root privileges.
