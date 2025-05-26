@@ -1952,3 +1952,142 @@ Check load average	    check_load
 Check memory usage	    Custom via NRPE
 Check open ports	      check_tcp -p <port>
 ````
+### 📘 Installing, Setting Up, and Managing OpenLDAP on CentOS 7/8
+🧩 What is OpenLDAP?
+OpenLDAP is an open-source implementation of the Lightweight Directory Access Protocol (LDAP). It is used to maintain a directory of users, groups, and other objects, enabling centralized authentication and directory services.
+# 🛠️ Step 1: Install OpenLDAP Server and Clients
+````
+sudo yum install openldap openldap-servers openldap-clients -y  # Install OpenLDAP packages
+sudo systemctl enable slapd  # Enable slapd to start at boot
+sudo systemctl start slapd  # Start the slapd (LDAP daemon)
+````
+# 🧾 Step 2: Verify OpenLDAP Installation
+````
+slaptest -u  # Validate LDAP configuration
+systemctl status slapd  # Check status of the OpenLDAP daemon
+````
+# 🔐 Step 3: Set LDAP Administrator Password
+````
+slappasswd  # Generate a hashed password
+````
+# Then edit or create a file to apply this password using LDIF:
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+replace: olcRootPW
+olcRootPW: <HASHED_PASSWORD_FROM_ABOVE>
+# Apply the configuration:
+````
+ldapmodify -Y EXTERNAL -H ldapi:/// -f change-password.ldif  # Set admin password
+````
+# 🗂️ Step 4: Configure LDAP Domain
+# Create domain structure using LDIF
+````
+cat > domain.ldif <<EOF
+dn: dc=example,dc=com
+objectClass: top
+objectClass: dcObject
+objectClass: organization
+o: Example Company
+dc: example
+
+dn: cn=Manager,dc=example,dc=com
+objectClass: organizationalRole
+cn: Manager
+description: Directory Manager
+EOF
+
+ldapadd -x -D cn=Manager,dc=example,dc=com -W -f domain.ldif  # Add domain entries
+````
+# 📁 Step 5: Add LDAP Base Structure (People and Groups)
+````
+cat > base.ldif <<EOF
+dn: ou=People,dc=example,dc=com
+objectClass: organizationalUnit
+ou: People
+
+dn: ou=Groups,dc=example,dc=com
+objectClass: organizationalUnit
+ou: Groups
+EOF
+
+ldapadd -x -D cn=Manager,dc=example,dc=com -W -f base.ldif  # Add OU structures
+````
+# 👥 Step 6: Add a User
+````
+cat > user.ldif <<EOF
+dn: uid=jdoe,ou=People,dc=example,dc=com
+objectClass: inetOrgPerson
+sn: Doe
+givenName: John
+cn: John Doe
+uid: jdoe
+userPassword: password
+mail: jdoe@example.com
+EOF
+
+ldapadd -x -D cn=Manager,dc=example,dc=com -W -f user.ldif  # Add user to directory
+````
+# 🔎 Step 7: Querying LDAP Entries
+````
+ldapsearch -x -b "dc=example,dc=com"  # View entire directory
+ldapsearch -x -b "ou=People,dc=example,dc=com" uid=jdoe  # Search for a specific user
+````
+# 🧑‍💼 Step 8: Manage LDAP Users & Groups with Command-Line
+````
+# Add group
+cat > group.ldif <<EOF
+dn: cn=developers,ou=Groups,dc=example,dc=com
+objectClass: posixGroup
+cn: developers
+gidNumber: 5000
+EOF
+
+ldapadd -x -D cn=Manager,dc=example,dc=com -W -f group.ldif  # Add new group
+
+# Modify user to include in group
+cat > usermod.ldif <<EOF
+dn: uid=jdoe,ou=People,dc=example,dc=com
+changetype: modify
+add: gidNumber
+gidNumber: 5000
+EOF
+
+ldapmodify -x -D cn=Manager,dc=example,dc=com -W -f usermod.ldif  # Assign user to group
+````
+# 🔐 Step 9: Configure LDAP Client (Optional)
+````
+sudo yum install nss-pam-ldapd openldap-clients nscd nss-pam-ldapd -y  # Install client packages
+sudo authconfig --enableldap --enableldapauth --ldapserver=ldap://<server-ip> --ldapbasedn="dc=example,dc=com" --enablemkhomedir --update  # Configure client authentication
+````
+# 📦 Optional: Enable TLS Encryption for LDAP (Secure)
+Generate certificate:
+````
+openssl req -new -x509 -nodes -out /etc/openldap/certs/ldap.crt -keyout /etc/openldap/certs/ldap.key -days 365
+````
+# Configure TLS in slapd config using ldif:
+````
+dn: cn=config
+changetype: modify
+add: olcTLSCertificateFile
+olcTLSCertificateFile: /etc/openldap/certs/ldap.crt
+-
+add: olcTLSCertificateKeyFile
+olcTLSCertificateKeyFile: /etc/openldap/certs/ldap.key
+````
+# Apply it:
+````
+ldapmodify -Y EXTERNAL -H ldapi:/// -f tls.ldif
+systemctl restart slapd
+````
+# 🧪 Useful OpenLDAP Testing & Maintenance Commands
+````
+systemctl restart slapd                  # Restart the LDAP server
+slaptest -u                              # Validate configuration
+ldapsearch -x -LLL -b dc=example,dc=com  # Lightweight query of LDAP
+slapcat                                  # Backup entire directory content to LDIF
+slapadd -l backup.ldif                   # Restore from backup
+````
+
+
+
+
