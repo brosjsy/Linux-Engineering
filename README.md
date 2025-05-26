@@ -2087,6 +2087,101 @@ ldapsearch -x -LLL -b dc=example,dc=com  # Lightweight query of LDAP
 slapcat                                  # Backup entire directory content to LDIF
 slapadd -l backup.ldif                   # Restore from backup
 ````
+## 3 🔍 Tracing Network Traffic – traceroute
+📌 Purpose
+traceroute helps trace the path packets take from your Linux system to a destination. It reveals each hop along the route and latency.
+
+✅ Installation (if not installed)
+````
+sudo yum install traceroute -y     # Install on CentOS/RHEL
+sudo apt install traceroute -y     # Install on Debian/Ubuntu
+````
+🧪 Usage Examples
+````
+traceroute google.com         # Trace route to google.com
+traceroute -n 8.8.8.8         # Use numeric IPs only (skip DNS lookup)
+traceroute -m 5 google.com    # Limit hops to 5
+traceroute -p 443 example.com # Use custom port (443 here)
+traceroute -T google.com      # Use TCP instead of UDP (better for firewalled networks)
+````
+### 🖼️ Opening Image Files in Linux (CLI-Based)
+📌 Purpose
+To view images from terminal in GUI or headless mode.
+
+✅ Install image viewers
+````
+sudo yum install eog -y             # GNOME Eye of Gnome
+sudo apt install feh -y             # Lightweight terminal image viewer
+````
+# 🧪 Usage
+````
+eog image.png                       # Opens image using Eye of GNOME
+feh image.jpg                       # Opens image in feh
+fim image.png                       # Opens in framebuffer terminal (for CLI environments)
+xdg-open image.jpg                  # Default image viewer
+````
+### 🔐 Configure and Secure SSH
+📌 Purpose
+Secure remote access to your server via SSH.
+
+✅ Installation (if SSH is missing)
+````
+sudo yum install openssh-server -y      # CentOS/RHEL
+sudo apt install openssh-server -y      # Debian/Ubuntu
+````
+# 🚀 Start and Enable SSH
+````
+sudo systemctl enable sshd              # Enable SSH on boot
+sudo systemctl start sshd               # Start SSH now
+````
+# 🔧 Configuration File
+Edit /etc/ssh/sshd_config:
+````
+sudo vi /etc/ssh/sshd_config
+````
+# 🔐 Hardening SSH (Best Practices)
+````
+PermitRootLogin no           # Disable root login
+PasswordAuthentication no    # Disable password login if using SSH keys
+Port 2222                    # Change default port from 22
+AllowUsers adminuser         # Allow only specific users
+````
+🔄 Restart SSH for changes to take effect
+
+```` sudo systemctl restart sshd ````
+### 🔑 SSH Keys – Access Remote Server Without Password
+📌 Purpose
+Enable secure, password-less login using SSH key pairs.
+✅ Step 1: Generate SSH Key Pair
+````
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+````
+Saves to ~/.ssh/id_rsa and ~/.ssh/id_rsa.pub
+✅ Step 2: Copy Public Key to Remote Server
+````
+ssh-copy-id user@remote_ip        # Automatically copies public key to remote server
+````
+OR Manually 
+cat ~/.ssh/id_rsa.pub | ssh user@remote_ip "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+
+✅ Step 3: SSH Without Password
+````
+ssh user@remote_ip                # Will log in using key authentication
+````
+🔐 Additional SSH Key Config (Optional)
+Edit ~/.ssh/config:
+````
+Host myserver
+    HostName 192.168.1.10
+    User admin
+    IdentityFile ~/.ssh/id_rsa
+````
+
+
+
+
+
+
 
 
 
