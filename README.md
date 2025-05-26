@@ -1725,3 +1725,85 @@ cd nagios-plugins-2.3.3
 make
 sudo make install
 ````
+### 🔐 OS Hardening in Linux (Practical Scenarios + Commands)
+🔹 What is OS Hardening?
+OS hardening secures the underlying operating system by reducing its attack surface, disabling unnecessary services, setting correct permissions, enforcing password policies, etc.
+ESSENTIAL OS HARDENING AND THE ESSENTIAL BASH TO AUTOMATE IT 
+````
+# 1. Disable unnecessary services
+systemctl disable bluetooth.service     # Disable Bluetooth if not needed
+systemctl disable cups.service          # Disable printing service
+
+# 2. Set password aging policies
+chage --maxdays 90 username             # Password expires after 90 days
+chage --mindays 7 username              # Minimum days before password change
+chage --warn 14 username                # Warn user 14 days before password expiry
+
+# 3. Disable root SSH login
+sed -i 's/^PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+systemctl restart sshd                 # Apply SSH configuration changes
+
+# 4. Enable automatic updates (Debian)
+apt install unattended-upgrades        # Install auto update package
+dpkg-reconfigure unattended-upgrades   # Configure it
+
+# 5. Set strong password policies
+echo "minlen = 12" >> /etc/security/pwquality.conf  # Enforce minimum password length
+
+# 6. Disable Ctrl+Alt+Del reboot
+ln -sf /dev/null /etc/systemd/system/ctrl-alt-del.target
+
+# 7. Enable auditing
+yum install auditd -y                  # Install audit daemon
+systemctl enable auditd                # Enable audit service
+systemctl start auditd                 # Start audit service
+
+# 8. Lock user account after failed login attempts
+authconfig --enablefaillock --update
+echo "auth required pam_faillock.so preauth audit silent deny=5 unlock_time=600" >> /etc/pam.d/system-auth
+
+# 9. Set file permissions
+chmod 700 ~/.ssh                       # Secure SSH directory
+chmod 600 ~/.ssh/authorized_keys       # Secure key files
+
+# 10. Configure firewall
+firewall-cmd --add-service=ssh --permanent   # Allow SSH
+firewall-cmd --remove-service=ftp --permanent  # Remove insecure services
+firewall-cmd --reload                        # Apply firewall rules
+
+# 11. Enable SELinux
+sed -i 's/SELINUX=disabled/SELINUX=enforcing/' /etc/selinux/config
+setenforce 1
+
+# 12. Disable USB storage
+echo "install usb-storage /bin/true" >> /etc/modprobe.d/disable-usb.conf
+
+# 13. Remove unnecessary packages
+yum remove telnet rsh ypbind xinetd -y       # Remove insecure or unused services
+
+# 14. Set umask for users
+echo "umask 027" >> /etc/profile             # Default permission for new files
+
+# 15. Secure shared memory
+echo "tmpfs /dev/shm tmpfs defaults,noexec,nosuid 0 0" >> /etc/fstab
+mount -o remount /dev/shm
+
+# 16. Create a banner for legal warning
+echo "Authorized access only!" > /etc/issue
+echo "Authorized access only!" > /etc/issue.net
+
+# 17. Disable IPv6 if not in use
+echo "net.ipv6.conf.all.disable_ipv6 = 1" >> /etc/sysctl.conf
+sysctl -p
+
+# 18. Limit use of compilers
+chmod 000 /usr/bin/gcc                    # Prevent local users compiling programs
+
+# 19. Run Lynis security audit
+yum install epel-release -y
+yum install lynis -y
+lynis audit system                       # Run system audit
+
+# 20. Create backup of critical files
+tar -czvf /root/etc-backup.tar.gz /etc   # Backup configuration files
+````
