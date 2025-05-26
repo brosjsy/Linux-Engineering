@@ -1226,3 +1226,452 @@ Mirror production directories to backup servers
 Push code to web servers
 Sync config files across a fleet of servers
 Efficient large file transfers with delta compression
+### 🛠️ Package and Patch Management in Linux
+📦 1. System Updates and Repositories
+✅ What it is:
+System updates pull latest versions of installed packages using online or offline repositories.
+```
+yum repolist                 # Display current repositories
+yum repolist enabled         # List all enabled repositories
+yum repolist disabled        # List all disabled repositories
+yum list available httpd     # Check if 'httpd' package is available
+yum install epel-release -y  # Install EPEL repository for extra packages
+yum makecache                # Update the repo metadata cache
+yum info nano                # View detailed info about 'nano' package
+yum-config-manager --enable <repo-id>    # Enable a specific repository
+yum-config-manager --disable <repo-id>   # Disable a specific repository
+yum clean all                # Clean all cached data (metadata and packages)
+yum clean packages           # Remove cached packages only
+yum check-update             # Check for available package updates
+yum update vim               # Update only 'vim' package
+yum update -y                # Update all installed packages automatically
+yum --security update        # Update only security patches
+yum repolist all             # List all repositories (enabled and disabled)
+vi /etc/yum.repos.d/custom.repo    # Edit or add a custom repo file
+echo "fastestmirror=1" >> /etc/yum.conf    # Enable fastest mirror plugin
+echo "keepcache=1" >> /etc/yum.conf        # Keep packages in cache after install
+````
+### System Upgrade and Patch Management
+System upgrades and patch management ensure your system is protected by applying security fixes and software improvements. yum upgrade upgrades all packages, and tools like yum history help track or undo updates.
+````
+yum upgrade -y                  # Upgrade all packages automatically
+yum upgrade nginx -y            # Upgrade only the 'nginx' package
+yum distro-sync -y              # Sync packages to distro versions (full upgrade)
+yum updateinfo list security all    # List all security updates
+yum install nginx-1.16.1 -y     # Install specific version of 'nginx'
+yum versionlock nginx           # Lock 'nginx' package to current version
+yum versionlock delete nginx    # Unlock 'nginx' from version lock
+yum versionlock list            # List all version locked packages
+yum --showduplicates list nginx # Show all available versions of 'nginx'
+yum --security upgrade          # Upgrade all security patches
+yum history                    # Show all yum transaction history
+yum history info 3             # Show details of transaction #3
+yum history undo 3             # Undo transaction #3
+yum history redo 3             # Redo transaction #3
+yum history rollback 2         # Roll back to transaction #2
+rpm -Va                       # Verify installed packages for altered files
+yum check                     # Check for broken dependencies or problems
+yum upgrade --assumeno nginx  # Simulate upgrade of 'nginx' (no install)
+````
+### Creating a Local YUM Repository
+Explanation:
+A local YUM repository stores RPM packages on your local server, allowing you to install software without internet access. createrepo generates metadata for the repository.
+````
+mkdir -p /var/www/html/yumrepo               # Create local repo directory
+cp /path/to/rpms/*.rpm /var/www/html/yumrepo/  # Copy RPM files to repo folder
+yum install createrepo -y                     # Install metadata creator
+createrepo /var/www/html/yumrepo/             # Create repository metadata
+yum install httpd -y                           # Install Apache web server
+systemctl start httpd                          # Start Apache server
+systemctl enable httpd                         # Enable Apache at boot
+chcon -R -t httpd_sys_content_t /var/www/html/yumrepo/   # Allow Apache access (SELinux)
+vi /etc/yum.repos.d/local.repo                 # Create/edit local repo config file
+# Add to local.repo:
+# [localrepo]
+# name=Local YUM Repo
+# baseurl=http://localhost/yumrepo/
+# enabled=1
+# gpgcheck=0
+yum clean all                                  # Clean yum cache
+yum repolist                                   # Verify local repo availability
+yum --disablerepo="*" --enablerepo="localrepo" install <package-name> -y  # Install package from local repo
+````
+### Advanced Package Management
+Advanced package management includes troubleshooting dependencies, querying detailed package info, and downloading packages without installing.
+````
+yum install httpd -y               # Install package with dependencies
+yumdownloader nginx                # Download nginx RPM without installing
+yum deplist nginx                  # List dependencies of 'nginx'
+yum provides */nginx               # Find which repo provides 'nginx'
+rpm -qf /usr/sbin/httpd            # Find package owning specific file
+rpm -qa                           # List all installed packages
+rpm -q nginx                      # Query if 'nginx' installed
+yum remove nginx -y               # Remove 'nginx' package
+yum reinstall nginx -y            # Reinstall 'nginx' package
+rpm -V nginx                     # Verify files of 'nginx' package
+repoquery --requires nginx        # Show package dependencies
+repoquery --whatrequires nginx    # Show reverse dependencies
+rpm -q --changelog nginx          # View changelog of 'nginx'
+yumdownloader --source nginx      # Download source RPM of 'nginx'
+rpm2cpio nginx.rpm | cpio -idmv   # Extract RPM package contents
+rpm -ivh --nodeps package.rpm     # Force install RPM ignoring dependencies
+rpm -Uvh nginx.rpm                # Upgrade package using rpm manually
+````
+### 🔁 Section Rolling Back Updates and Patches
+````
+yum history                         # List all yum transactions
+yum history info 7                 # Show info on transaction #7
+yum history undo 7                 # Undo transaction #7
+yum history rollback 5             # Roll back to transaction #5
+yum downgrade nginx                # Downgrade 'nginx' to previous version
+yum remove nginx && yum install nginx-1.16.1 -y   # Remove and install older version
+yum versionlock nginx-1.16.1       # Lock 'nginx' to older version
+yum history list all               # List all transactions
+yum history list update            # List update transactions only
+rpm -Uvh --oldpackage nginx-1.16.1.rpm   # Install old RPM manually
+cp -r /var/cache/yum /opt/yum-backup     # Backup current cached RPMs
+yum remove <package-name>          # Remove broken package
+yum-complete-transaction --cleanup-only # Complete or cleanup incomplete yum transaction
+echo "keepcache=1" >> /etc/yum.conf      # Keep packages cached after install for rollback
+````
+### 🔐 Section 1: Setting Up and Managing SSH and Telnet
+SSH (Secure Shell) is the secure, encrypted method to remotely access Linux systems. Telnet is an older, unencrypted protocol rarely used now but still found in legacy environments. Managing these services involves installing, configuring, starting/stopping, and securing the servers.
+````
+# Install OpenSSH server and client
+yum install openssh-server openssh-clients -y         # Install SSH server and clients
+systemctl start sshd                                  # Start SSH daemon
+systemctl enable sshd                                 # Enable SSH to start on boot
+systemctl status sshd                                 # Check SSH daemon status
+firewall-cmd --permanent --add-service=ssh           # Open SSH port 22 in firewall
+firewall-cmd --reload                                 # Reload firewall rules
+ss -tnlp | grep ssh                                  # Verify SSH is listening on port 22
+vim /etc/ssh/sshd_config                             # Edit SSH server config file
+# Example: Change port, disable root login, allow specific users
+systemctl restart sshd                                # Restart SSH service after config changes
+ssh user@hostname                                     # Connect to remote SSH server
+scp file.txt user@hostname:/path                      # Securely copy file via SSH
+ssh-keygen                                           # Generate SSH key pair
+ssh-copy-id user@hostname                            # Copy SSH public key for passwordless login
+yum install telnet -y                                # Install telnet client (rarely used)
+yum install telnet-server -y                         # Install telnet server
+systemctl start telnet.socket                         # Start telnet socket service
+systemctl enable telnet.socket                        # Enable telnet socket service at boot
+firewall-cmd --permanent --add-port=23/tcp           # Open telnet port 23 in firewall
+firewall-cmd --reload                                 # Reload firewall rules
+telnet hostname                                      # Connect to remote host via telnet
+ss -tnlp | grep telnet                               # Verify telnet is listening (if enabled)
+systemctl stop telnet.socket                          # Stop telnet socket service (recommended to disable)
+````
+### 🌐 Download, Install and Configure DNS
+DNS (Domain Name System) resolves domain names to IP addresses. bind is the most common DNS server software on Linux. Configuring DNS involves installing bind, setting up zone files, and managing service status.
+````
+yum install bind bind-utils -y                        # Install BIND DNS server and utilities
+vim /etc/named.conf                                   # Edit main BIND configuration
+# Configure zones, allow queries, logging
+vim /var/named/example.com.zone                        # Create forward zone file
+vim /var/named/reverse.zone                            # Create reverse zone file
+chown named:named /var/named/example.com.zone          # Set proper ownership for zone files
+chown named:named /var/named/reverse.zone
+systemctl start named                                  # Start DNS server
+systemctl enable named                                 # Enable DNS server at boot
+firewall-cmd --permanent --add-service=dns            # Allow DNS port 53 TCP/UDP in firewall
+firewall-cmd --reload                                 # Reload firewall rules
+dig @localhost example.com                            # Test DNS resolution locally
+host example.com                                      # Query DNS for example.com
+nslookup example.com                                  # Another DNS query tool
+systemctl status named                                # Check DNS server status
+rndc reload                                           # Reload DNS server config without restart
+rndc status                                           # Get current DNS server status
+named-checkconf                                       # Check syntax of named.conf
+named-checkzone example.com /var/named/example.com.zone  # Validate zone file
+tail -f /var/log/messages                             # Monitor DNS server logs
+setsebool -P named_write_master_zones on             # SELinux permission for bind to write zones
+````
+### 🖥 Hostname and IP Lookup
+Managing system hostname and performing IP lookups are basic network tasks useful for identifying and diagnosing systems.
+````
+hostname                                             # Show current hostname
+hostnamectl set-hostname newhostname                 # Change system hostname permanently
+cat /etc/hostname                                    # View saved hostname
+ip addr show                                         # Display all IP addresses on interfaces
+ip addr show eth0                                    # Show IP on specific interface
+ip route show                                        # Show routing table
+nslookup google.com                                  # DNS lookup for google.com
+host google.com                                      # Another hostname lookup tool
+dig google.com                                       # Detailed DNS lookup
+ping -c 4 8.8.8.8                                    # Ping external IP address (Google DNS)
+ping -c 4 google.com                                 # Ping domain to test DNS resolution
+ip link show                                         # Show network interfaces and status
+nmcli device status                                  # Show NetworkManager device status
+nmcli connection show                                # List network connections
+ifconfig                                            # Show network interfaces (deprecated but still used)
+arp -a                                              # Show ARP table entries
+ip -s link                                          # Show interface statistics
+netstat -ie                                         # Show detailed interface stats
+cat /etc/hosts                                      # Check local hostname to IP mappings
+`````
+### ⏰ Section 4: Network Time Protocol (NTP)
+NTP synchronizes system time with global time servers. Proper time sync is critical for logs, security, and operations. CentOS 7 uses ntpd or chronyd.
+````
+yum install ntp -y                                  # Install NTP daemon
+systemctl start ntpd                                # Start NTP service
+systemctl enable ntpd                               # Enable NTP service at boot
+ntpq -p                                             # Query NTP peers and sync status
+timedatectl                                         # Show current time settings
+ntpstat                                             # Show synchronization status
+ntpdate pool.ntp.org                                # Manually sync time once
+systemctl restart ntpd                              # Restart NTP after config changes
+vim /etc/ntp.conf                                   # Edit NTP configuration file
+firewall-cmd --permanent --add-service=ntp         # Allow NTP port 123 UDP in firewall
+firewall-cmd --reload                               # Reload firewall rules
+chronyc tracking                                    # Show chrony tracking status (if using chrony)
+chronyc sources                                     # Show chrony sources
+timedatectl set-ntp true                            # Enable systemd NTP sync
+date                                                # Show current system date and time
+hwclock --systohc                                   # Sync hardware clock to system time
+hwclock --hctosys                                   # Sync system time from hardware clock
+````
+### chronyd – Newer Version of NTP
+
+chronyd is a modern replacement for ntpd with better performance on intermittent network connections. CentOS 7 uses it by default.
+````
+yum install chrony -y                               # Install chrony daemon
+systemctl start chronyd                             # Start chrony service
+systemctl enable chronyd                            # Enable chrony at boot
+chronyc tracking                                   # Show current time sync status
+chronyc sources                                    # Show configured time servers
+chronyc sourcestats                                # Detailed source statistics
+chronyc activity                                   # Show chrony activity info
+vim /etc/chrony.conf                               # Edit chrony config file
+systemctl restart chronyd                           # Restart after config changes
+firewall-cmd --permanent --add-service=ntp        # Open UDP port 123 for chrony
+firewall-cmd --reload                              # Reload firewall rules
+timedatectl set-ntp true                           # Enable NTP sync via systemd
+timedatectl status                                 # Check time sync status
+date                                               # Show system date/time
+hwclock --systohc                                  # Sync hardware clock to system time
+chronyc makestep                                  # Force immediate time correction
+chronyc sources -v                                # Verbose source info
+systemctl status chronyd                           # Check chrony service status
+````
+### 🕒 Section 6: New System Utility – timedatectl
+timedatectl is a modern utility to query and change the system clock and its settings including timezone and NTP status.
+````
+timedatectl                                          # Show current date/time and NTP status
+timedatectl status                                   # Detailed status of time settings
+timedatectl set-time "2025-05-26 15:30:00"           # Set system date/time manually
+timedatectl set-timezone Africa/Lagos                 # Set timezone
+timedatectl list-timezones                             # List all available timezones
+timedatectl set-ntp true                               # Enable NTP synchronization
+timedatectl set-ntp false                              # Disable NTP synchronization
+timedatectl show                                       # Show current settings
+timedatectl timesync-status                            # Show systemd-timesyncd status
+timedatectl set-local-rtc 1                            # Enable RTC to use local time
+timedatectl set-local-rtc 0                            # Disable RTC local time usage
+timedatectl show-timesync                              # Show detailed timesync info
+date                                                  # Display current date and time
+hwclock --systohc                                      # Sync hardware clock from system clock
+hwclock --hctosys                                      # Sync system clock from hardware clock
+systemctl restart systemd-timesyncd                    # Restart time synchronization service
+timedatectl set-time "2025-05-26 10:00:00"             # Example manual time set
+````
+### Mail Transfer Agent (MTA) – Sendmail
+ 📌 What is Sendmail?
+Sendmail is one of the most widely used Mail Transfer Agents (MTAs) that routes and delivers email on a network. It is complex but highly configurable.
+
+### ✅ Installation & Setup
+
+```bash
+yum install sendmail sendmail-cf -y                          # Install Sendmail and config tools
+systemctl start sendmail                                     # Start the Sendmail service
+systemctl enable sendmail                                    # Enable Sendmail to start at boot
+firewall-cmd --permanent --add-port=25/tcp                  # Open SMTP port 25
+firewall-cmd --reload                                        # Reload firewall
+sendmail -d0.1 -bv root                                      # Test Sendmail config
+hostnamectl set-hostname mailserver.local                   # Set a proper hostname for Sendmail
+vim /etc/hosts                                               # Ensure hostname resolves to IP
+vim /etc/mail/sendmail.mc                                    # Edit macro config file
+m4 /etc/mail/sendmail.mc > /etc/mail/sendmail.cf             # Compile config to main file
+systemctl restart sendmail                                   # Apply new config by restarting
+echo "Test email" | mail -s "Subject" user@domain.com        # Send a test email
+mailq                                                       # Show mail queue
+sendmail -q                                                  # Force send queue
+tail -f /var/log/maillog                                     # Monitor Sendmail logs
+yum install mailx -y                                         # Install mail client for sending mail
+alternatives --config mta                                    # View/set default MTA
+postconf -n                                                  # (Postfix alternative config check)
+````
+### Web Server – Apache httpd
+📌 What is Apache?
+Apache is a widely used open-source web server for hosting web content over HTTP/HTTPS.
+
+✅ Installation & Setup
+````
+yum install httpd -y                                         # Install Apache web server
+systemctl start httpd                                        # Start Apache
+systemctl enable httpd                                       # Enable Apache to start on boot
+firewall-cmd --permanent --add-service=http                 # Allow HTTP port 80
+firewall-cmd --permanent --add-service=https                # Allow HTTPS port 443
+firewall-cmd --reload                                        # Reload firewall
+ss -tnlp | grep :80                                          # Confirm Apache is listening on port 80
+vim /etc/httpd/conf/httpd.conf                               # Edit Apache main config file
+mkdir -p /var/www/html/testsite                              # Create web directory
+echo "Hello Apache" > /var/www/html/testsite/index.html     # Create test HTML file
+systemctl restart httpd                                      # Restart to apply changes
+httpd -v                                                     # Show Apache version
+apachectl configtest                                         # Test Apache config
+apachectl graceful                                           # Gracefully restart Apache
+tail -f /var/log/httpd/access_log                            # Monitor access log
+tail -f /var/log/httpd/error_log                             # Monitor error log
+semanage port -a -t http_port_t -p tcp 8080                 # Allow Apache on custom port
+systemctl stop httpd                                         # Stop Apache server
+````
+### Web Server – nginx
+📌 What is nginx?
+nginx is a lightweight, high-performance web server often used as a reverse proxy and load balancer.
+````
+yum install epel-release -y                                  # Enable EPEL repo (required for nginx)
+yum install nginx -y                                         # Install nginx
+systemctl start nginx                                        # Start nginx service
+systemctl enable nginx                                       # Enable nginx at boot
+firewall-cmd --permanent --add-service=http                 # Allow HTTP
+firewall-cmd --permanent --add-service=https                # Allow HTTPS
+firewall-cmd --reload                                        # Reload firewall rules
+ss -tnlp | grep :80                                          # Check if nginx is listening on port 80
+nginx -v                                                     # Check nginx version
+vim /etc/nginx/nginx.conf                                    # Edit main nginx config
+mkdir -p /usr/share/nginx/html/test                          # Create test website directory
+echo "Welcome to nginx" > /usr/share/nginx/html/test/index.html  # Add index.html
+nginx -t                                                     # Test nginx configuration
+systemctl restart nginx                                      # Restart to apply new config
+tail -f /var/log/nginx/access.log                            # Monitor access log
+tail -f /var/log/nginx/error.log                             # Monitor error log
+systemctl stop nginx                                         # Stop nginx server
+nginx -s reload                                              # Reload nginx without full restart
+````
+Here are basic shell scripts to automate the installation, initial setup, and basic management for the following services, crafted in a clean, professional format for your GitHub Linux Administration Portfolio:
+
+✅ Sendmail (MTA)
+
+✅ Apache (httpd)
+
+✅ nginx
+
+✅ rsyslog (Central Logger)
+vi install_sendmail.sh
+````
+#!/bin/bash
+# Script to install and configure Sendmail (MTA)
+
+echo "[+] Installing Sendmail..."
+yum install sendmail sendmail-cf mailx -y
+
+echo "[+] Starting and enabling Sendmail..."
+systemctl start sendmail
+systemctl enable sendmail
+
+echo "[+] Opening SMTP port 25..."
+firewall-cmd --permanent --add-port=25/tcp
+firewall-cmd --reload
+
+echo "[+] Setting hostname for Sendmail..."
+hostnamectl set-hostname mailserver.local
+echo "127.0.0.1   mailserver.local" >> /etc/hosts
+````
+vi install_httpd.sh 
+````
+#!/bin/bash
+# Script to install and configure Apache HTTPD server
+
+echo "[+] Installing Apache..."
+yum install httpd -y
+
+echo "[+] Starting and enabling Apache..."
+systemctl start httpd
+systemctl enable httpd
+
+echo "[+] Opening HTTP and HTTPS ports..."
+firewall-cmd --permanent --add-service=http
+firewall-cmd --permanent --add-service=https
+firewall-cmd --reload
+
+echo "[+] Creating sample website..."
+mkdir -p /var/www/html/testsite
+echo "Hello from Apache" > /var/www/html/testsite/index.html
+
+echo "[+] Restarting Apache..."
+systemctl restart httpd
+
+echo "[+] Apache setup complete. Visit http://<your_server_ip>/testsite"
+````
+vi install_nginx.sh
+````
+#!/bin/bash
+# Script to install and configure nginx server
+
+echo "[+] Installing EPEL and nginx..."
+yum install epel-release -y
+yum install nginx -y
+
+echo "[+] Starting and enabling nginx..."
+systemctl start nginx
+systemctl enable nginx
+
+echo "[+] Opening HTTP and HTTPS ports..."
+firewall-cmd --permanent --add-service=http
+firewall-cmd --permanent --add-service=https
+firewall-cmd --reload
+
+echo "[+] Creating sample nginx website..."
+mkdir -p /usr/share/nginx/html/test
+echo "Welcome to nginx server" > /usr/share/nginx/html/test/index.html
+
+echo "[+] Restarting nginx..."
+systemctl restart nginx
+
+echo "[+] nginx setup complete. Visit http://<your_server_ip>/test"
+````
+vi install_rsyslog.sh 
+````
+#!/bin/bash
+# Script to install and configure rsyslog for local and remote logging
+
+echo "[+] Installing rsyslog..."
+yum install rsyslog -y
+
+echo "[+] Starting and enabling rsyslog..."
+systemctl start rsyslog
+systemctl enable rsyslog
+
+echo "[+] Configuring remote logging..."
+sed -i '/^#\$ModLoad imudp/s/^#//' /etc/rsyslog.conf
+sed -i '/^#\$UDPServerRun 514/s/^#//' /etc/rsyslog.conf
+sed -i '/^#\$ModLoad imtcp/s/^#//' /etc/rsyslog.conf
+sed -i '/^#\$InputTCPServerRun 514/s/^#//' /etc/rsyslog.conf
+
+echo "[+] Opening UDP/TCP port 514..."
+firewall-cmd --permanent --add-port=514/udp
+firewall-cmd --permanent --add-port=514/tcp
+firewall-cmd --reload
+
+echo "[+] Creating log directory for remote hosts..."
+mkdir -p /var/log/remotelogs
+
+echo "[+] Adding custom log rule..."
+echo "\$template RemoteLogs,\"/var/log/remotelogs/%HOSTNAME%.log\"" > /etc/rsyslog.d/remote.conf
+echo "*.* ?RemoteLogs" >> /etc/rsyslog.d/remote.conf
+
+echo "[+] Restarting rsyslog..."
+systemctl restart rsyslog
+
+echo "[+] rsyslog configured for central logging."
+````
+### ✅ Permissions Note
+After saving each script (e.g., install_httpd.sh), ill give it an execute permissions:
+chmod a+x install_httpd.sh
+to run the script the we can proceed to ````./install_httpd.sh````
+
+echo "[+] Verifying Sendmail config..."
+sendmail -d0.1 -bv root
+
+echo "[+] Sendmail installed and configured."
