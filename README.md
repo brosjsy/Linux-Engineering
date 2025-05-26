@@ -2287,7 +2287,41 @@ sudo firewall-cmd --get-active-zones                 # Show active zones
 sudo firewall-cmd --set-default-zone=public          # Set default zone
 ````
 
+### ⚙️ Tune System Performance
+✅ Install tuned and enable profiles
+````
+sudo yum install tuned -y                # Install tuned package
+sudo systemctl enable --now tuned        # Enable tuned service
+````
+🔍 Check Available Tuning Profiles
+````
+tuned-adm list                          # List available tuned profiles
+````
+ Apply a Performance Profile
+ ````
+ sudo tuned-adm profile throughput-performance   # Set system for network throughput
+ sudo tuned-adm active                           # Show active profile
+````
+🔧 Common Tuned Profiles:
+balanced – Default profile
 
+powersave – Save energy
+
+throughput-performance – High throughput for server
+
+latency-performance – Low latency
+
+virtual-guest – For VMs
+
+### 🧪 Monitor System Performance Tools
+````
+top                     # Real-time process monitoring
+htop                    # Improved version of top
+vmstat                  # Memory usage
+iostat                  # I/O statistics
+uptime                  # Load average
+free -h                 # Human-readable memory stats
+````
 
 
 
