@@ -2227,6 +2227,68 @@ ssh -p $REMOTE_PORT "${REMOTE_USER}@${REMOTE_HOST}" "echo '✅ Passwordless SSH 
 
 echo "[✔] SSH key-based authentication is set up!"
 ````
+### 📡 Linux Web-Based Administration (Cockpit)
+Cockpit is a lightweight, browser-based Linux administration tool.
+
+✅ Installation & Enable Cockpit
+````
+sudo yum install cockpit -y             # Install Cockpit on CentOS/RHEL
+sudo systemctl enable --now cockpit     # Enable and start the Cockpit service
+sudo firewall-cmd --permanent --add-service=cockpit  # Open port in firewall
+sudo firewall-cmd --reload              # Reload firewall to apply change
+````
+# 🔐 Access Cockpit
+
+Open a web browser
+
+Navigate to: https://<your-server-ip>:9090
+
+Login using your Linux username and password
+
+🧰 What You Can Manage:
+Services
+Logs
+Storage
+Networking
+Terminal
+System performance
+Containers, Updates, and more (modular)
+
+🧪 Verify Cockpit Status
+````
+systemctl status cockpit                # Check if cockpit is running
+ss -tuln | grep 9090                    # Check if cockpit port is open
+````
+### Manage Network Security (Firewalld)
+````
+sudo yum install firewalld -y          # Install firewalld
+sudo systemctl enable --now firewalld  # Enable and start firewalld
+````
+# 🔍 Check Firewalld Status
+````
+sudo firewall-cmd --state              # Check if it's running
+sudo firewall-cmd --list-all           # Show current zone and settings
+````
+# 🔐 Basic Firewall Operations
+````
+sudo firewall-cmd --add-port=8080/tcp --permanent    # Open TCP port 8080 permanently
+sudo firewall-cmd --remove-port=8080/tcp --permanent # Close TCP port 8080 permanently
+sudo firewall-cmd --add-service=http --permanent     # Allow HTTP service
+sudo firewall-cmd --remove-service=http --permanent  # Block HTTP service
+sudo firewall-cmd --reload                            # Apply changes
+````
+# 🔐 Use Rich Rules (Advanced)
+````
+sudo firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=192.168.1.10 accept' # Allow specific IP
+````
+# 🔁 Zones
+````
+sudo firewall-cmd --get-active-zones                 # Show active zones
+sudo firewall-cmd --set-default-zone=public          # Set default zone
+````
+
+
+
 
 
 
