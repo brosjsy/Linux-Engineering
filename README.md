@@ -2177,9 +2177,56 @@ Host myserver
     IdentityFile ~/.ssh/id_rsa
 ````
 
+### ✅ ssh_key_setup.sh – Passwordless SSH Setup Script
+````
+#!/bin/bash
 
+# ============================
+# Passwordless SSH Setup Script
+# ============================
 
+# Define your variables
+REMOTE_USER="yourusername"           # Remote server username
+REMOTE_HOST="your.server.ip"         # Remote server IP address or hostname
+REMOTE_PORT=22                       # Custom SSH port (default is 22)
+KEY_FILE="$HOME/.ssh/id_rsa"         # SSH private key file path
+SSH_CONFIG_FILE="/etc/ssh/sshd_config"
 
+# ----------------------------
+# Step 1: Generate SSH key pair (if not already exists)
+# ----------------------------
+if [ ! -f "$KEY_FILE" ]; then
+    echo "[+] Generating SSH key pair..."
+    ssh-keygen -t rsa -b 4096 -N "" -f "$KEY_FILE"
+else
+    echo "[*] SSH key already exists. Skipping key generation."
+fi
+
+# ----------------------------
+# Step 2: Copy the public key to the remote server
+# ----------------------------
+echo "[+] Copying public key to remote server..."
+ssh-copy-id -i "${KEY_FILE}.pub" -p $REMOTE_PORT "${REMOTE_USER}@${REMOTE_HOST}"
+
+# ----------------------------
+# Step 3: Harden SSH on the remote server (optional)
+# ----------------------------
+echo "[+] Configuring SSH on the remote server for key-only authentication..."
+
+ssh -p $REMOTE_PORT ${REMOTE_USER}@${REMOTE_HOST} << EOF
+sudo sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' $SSH_CONFIG_FILE
+sudo sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' $SSH_CONFIG_FILE
+sudo systemctl restart sshd
+EOF
+
+# ----------------------------
+# Step 4: Test the connection
+# ----------------------------
+echo "[+] Testing passwordless SSH login..."
+ssh -p $REMOTE_PORT "${REMOTE_USER}@${REMOTE_HOST}" "echo '✅ Passwordless SSH Login Successful!'"
+
+echo "[✔] SSH key-based authentication is set up!"
+````
 
 
 
