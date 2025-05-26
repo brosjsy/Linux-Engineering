@@ -1807,3 +1807,148 @@ lynis audit system                       # Run system audit
 # 20. Create backup of critical files
 tar -czvf /root/etc-backup.tar.gz /etc   # Backup configuration files
 ````
+### 🔹 Accessing the Nagios Web Interface
+Open your browser and navigate to:
+
+http://<your_server_ip>/nagios
+Login using:
+Username: nagiosadmin
+Password: set during installation via htpasswd
+
+🔹 Core Nagios Directories and Files
+Path	Description
+/usr/local/nagios/etc	            Main configuration directory
+/usr/local/nagios/etc/nagios.cfg	Main Nagios config file
+/usr/local/nagios/etc/objects/	  Host/service/group config files
+/usr/local/nagios/var/nagios.log	Nagios activity log
+/usr/local/nagios/bin/nagios	    Nagios command-line binary
+
+🔹 Useful Nagios Commands
+
+````
+# Start Nagios
+sudo systemctl start nagios  # Start monitoring engine
+
+# Stop Nagios
+sudo systemctl stop nagios
+
+# Restart Nagios
+sudo systemctl restart nagios  # Apply new config changes
+
+# Check configuration syntax
+/usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg  # Validate config
+
+# View Nagios process
+ps aux | grep nagios  # Ensure nagios is running
+
+# Tail logs for troubleshooting
+tail -f /usr/local/nagios/var/nagios.log
+````
+🔹 Add a New Host for Monitoring
+Create a new config file:
+
+sudo vim /usr/local/nagios/etc/objects/linux-server.cfg
+Example Host Definition:
+
+
+define host{
+    use             linux-server
+    host_name       webserver1
+    alias           Web Server
+    address         192.168.1.10
+}
+
+# Add Service Checks:
+
+
+define service{
+    use                 generic-service
+    host_name           webserver1
+    service_description HTTP
+    check_command       check_http
+}
+
+define service{
+    use                 generic-service
+    host_name           webserver1
+    service_description PING
+    check_command       check_ping!100.0,20%!500.0,60%
+}
+# Include the new config in nagios.cfg:
+
+echo "cfg_file=/usr/local/nagios/etc/objects/linux-server.cfg" >> /usr/local/nagios/etc/nagios.cfg
+Restart Nagios:
+````
+sudo systemctl restart nagios
+````
+# 🔹 Custom Check Commands (e.g., check disk usage)
+Define a custom check in /usr/local/nagios/etc/objects/commands.cfg:
+
+define command{
+    command_name    check_disk_root
+    command_line    $USER1$/check_disk -w 20% -c 10% -p /
+}
+Assign it to a host service:
+
+cfg
+Copy
+Edit
+define service{
+    use                 generic-service
+    host_name           webserver1
+    service_description Root Disk Space
+    check_command       check_disk_root
+}
+# 🔹 Viewing Host/Service Status on Web UI
+Navigate to: http://<server_ip>/nagios
+
+Click:
+
+Current Status → to view Hosts and Services
+
+Service Detail → detailed view per host
+
+Notifications → alerts log
+
+Tactical Overview → health summary
+
+# 🔹 Notification & Alerting Configuration
+Configure contact in contacts.cfg:
+
+define contact{
+    contact_name            sysadmin
+    email                  you@example.com
+    use                    generic-contact
+}
+
+define contactgroup{
+    contactgroup_name       admins
+    members                 sysadmin
+}
+Add to host/service definition:
+
+
+contact_groups            admins
+Enable email alerts in /etc/aliases and configure sendmail or postfix.
+
+### 🔹 Using NRPE for Remote Checks
+Install NRPE agent on client systems to perform local checks (like CPU, memory, disk usage):
+
+````
+yum install nrpe nagios-plugins-all -y
+systemctl enable nrpe
+systemctl start nrpe
+````
+Then configure /etc/nagios/nrpe.cfg and add NRPE commands to your Nagios server.
+
+🧠 Example Monitoring Tasks
+Task	Check Command
+````
+Ping host	  	          check_ping
+Check HTTP port	        check_http
+Check disk space	      check_disk
+Check logged in users  	check_users
+Check load average	    check_load
+Check memory usage	    Custom via NRPE
+Check open ports	      check_tcp -p <port>
+````
