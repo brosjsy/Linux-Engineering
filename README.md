@@ -1577,6 +1577,11 @@ firewall-cmd --reload
 echo "[+] Setting hostname for Sendmail..."
 hostnamectl set-hostname mailserver.local
 echo "127.0.0.1   mailserver.local" >> /etc/hosts
+
+echo "[+] Verifying Sendmail config..."
+sendmail -d0.1 -bv root
+
+echo "[+] Sendmail installed and configured."
 ````
 vi install_httpd.sh 
 ````
@@ -1665,13 +1670,58 @@ echo "[+] Restarting rsyslog..."
 systemctl restart rsyslog
 
 echo "[+] rsyslog configured for central logging."
+
 ````
 ### ✅ Permissions Note
 After saving each script (e.g., install_httpd.sh), ill give it an execute permissions:
 chmod a+x install_httpd.sh
 to run the script the we can proceed to ````./install_httpd.sh````
 
-echo "[+] Verifying Sendmail config..."
-sendmail -d0.1 -bv root
+### ✅ Installing, Configuring and Managing Nagios on Linux
+🔹 What is Nagios?
+Nagios is a powerful open-source monitoring system that enables organizations to identify and resolve IT infrastructure problems before they affect critical business processes. It monitors systems, networks, and infrastructure.
 
-echo "[+] Sendmail installed and configured."
+🔧 Step-by-Step Installation and Configuration of Nagios on CentOS 7
+# Install required packages
+````
+sudo yum install -y httpd php gcc glibc glibc-common gd gd-devel make net-snmp openssl-devel wget unzip perl
+
+# Create nagios user and group
+sudo useradd nagios
+sudo groupadd nagcmd
+sudo usermod -a -G nagcmd nagios
+sudo usermod -a -G nagcmd apache
+
+# Download Nagios Core
+cd /tmp
+wget https://assets.nagios.com/downloads/nagioscore/releases/nagios-4.4.6.tar.gz
+
+# Extract and compile
+tar -xzf nagios-4.4.6.tar.gz
+cd nagios-4.4.6
+./configure --with-command-group=nagcmd
+make all
+sudo make install
+sudo make install-init
+sudo make install-config
+sudo make install-commandmode
+sudo make install-webconf
+
+# Set Nagios web admin password
+sudo htpasswd -c /usr/local/nagios/etc/htpasswd.users nagiosadmin
+
+# Enable Apache and Nagios
+sudo systemctl enable httpd
+sudo systemctl start httpd
+sudo systemctl enable nagios
+sudo systemctl start nagios
+
+# Install Nagios plugins
+cd /tmp
+wget https://nagios-plugins.org/download/nagios-plugins-2.3.3.tar.gz
+tar -xzf nagios-plugins-2.3.3.tar.gz
+cd nagios-plugins-2.3.3
+./configure --with-nagios-user=nagios --with-nagios-group=nagios
+make
+sudo make install
+````
