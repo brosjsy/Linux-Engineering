@@ -2765,6 +2765,206 @@ firewall-cmd --reload
 systemctl start openvpn@server
 systemctl enable openvpn@server
 ````
+🧰 Squid Proxy Server – Installation, Configuration & Management
+📌 What is Squid?
+Squid is a caching and forwarding HTTP web proxy. It is used for speeding up a web server by caching repeated requests, filtering traffic, restricting access, and improving performance.
+
+````
+sudo yum install squid -y     # Install Squid package on CentOS/RHEL
+sudo systemctl enable squid   # Enable Squid service at boot
+sudo systemctl start squid    # Start Squid service
+sudo systemctl status squid   # Check status of Squid service
+````
+⚙️ 2. Basic Configuration of Squid
+The main configuration file is /etc/squid/squid.conf.
+
+🔧 Common Configuration Changes
+````
+sudo cp /etc/squid/squid.conf /etc/squid/squid.conf.bak  # Backup original config file
+sudo vi /etc/squid/squid.conf
+````
+Modify the following lines:
+````
+http_port 3128                         # Default Squid port
+
+acl localnet src 192.168.1.0/24        # Allow local network access
+http_access allow localnet             # Grant access to defined ACL
+
+visible_hostname proxyserver.local     # Optional: Set visible hostname
+````
+🔐 3. Restricting Access
+Only allow specific IPs to use the proxy:
+````
+acl allowed_ips src 192.168.1.10 192.168.1.20    # Define allowed IPs
+http_access allow allowed_ips                   # Allow access to these IPs
+http_access deny all                            # Deny all other access
+````
+Reload configuration after changes:
+````
+sudo systemctl reload squid     # Reload config without full restart
+````
+🌐 4. Configure Client to Use Proxy
+Option A: On Web Browser
+Set HTTP proxy: IP_ADDRESS and port 3128
+Option B: On Linux System (using export)
+````
+export http_proxy="http://192.168.1.1:3128"     # Set proxy for HTTP
+export https_proxy="http://192.168.1.1:3128"    # Set proxy for HTTPS
+````
+🧾 5. Managing Squid Logs
+  ````
+tail -f /var/log/squid/access.log      # Monitor access logs
+tail -f /var/log/squid/cache.log       # Monitor cache logs
+du -sh /var/spool/squid/               # View size of cache directory
+squid -k reconfigure                   # Reload config without restarting
+````
+🛠️ 6. Advanced Configuration Examples
+💾 Enable Caching of Specific Content
+````
+refresh_pattern .jpg 1440 100% 4320
+refresh_pattern .png 1440 100% 4320
+refresh_pattern -i ^ftp: 1440 20% 10080
+````
+🌍 Block Access to Specific Websites
+````
+acl blocked_sites dstdomain .facebook.com .youtube.com
+http_access deny blocked_sites
+````
+📂 Block Files by Extension
+````
+acl forbidden_files urlpath_regex \.mp3$ \.mp4$ \.avi$
+http_access deny forbidden_files
+````
+📘 Installing, Configuring, and Managing Ansible
+Ansible is a powerful automation tool used to configure systems, deploy software, and orchestrate complex tasks across multiple servers using SSH and YAML playbooks. It does not require an agent on remote machines, making it lightweight and easy to set up.
+✅ Step 1: Install Ansible on the Control Node
+For RHEL/CentOS:
+````
+sudo yum install epel-release -y                    # Enable EPEL repository
+sudo yum install ansible -y                         # Install Ansible package
+ansible --version                                   # Verify Ansible installation
+````
+For Ubuntu/Debian:
+````
+sudo apt update -y                                  # Update system packages
+sudo apt install ansible -y                         # Install Ansible
+ansible --version                                   # Confirm installation
+````
+✅ Step 2: Create and Configure the Inventory File
+By default, Ansible reads its list of managed servers (called inventory) from the file: /etc/ansible/hosts
+````
+sudo nano /etc/ansible/hosts                        # Open inventory file in nano editor
+````
+````
+[webservers]                                        # Define a group named 'webservers'
+192.168.56.101                                      # IP address of first web server
+192.168.56.102                                      # IP address of second web server
+
+[dbservers]                                         # Define a group named 'dbservers'
+192.168.56.103                                      # IP address of database server
+````
+📝 Explanation:
+
+Group names are defined in square brackets [group_name]
+
+You can add as many hosts as needed under each group
+
+This structure allows you to run playbooks or commands against specific server groups
+
+✅ Step 3: Setup SSH Key-based Authentication
+Ansible uses SSH to connect to target servers. To avoid entering a password each time, set up SSH key authentication.
+````
+ssh-keygen -t rsa                                   # Generate SSH key pair (press enter to accept defaults)
+ssh-copy-id user@192.168.56.101                     # Copy public key to webserver 1
+ssh-copy-id user@192.168.56.102                     # Copy to webserver 2
+ssh-copy-id user@192.168.56.103                     # Copy to database server
+````
+Now, you should be able to SSH into any server without being prompted for a password.
+✅ Step 4: Test Ansible Connection with ping Module
+````
+ansible all -m ping                                 # Test connectivity to all servers in the inventory
+ansible webservers -m ping                          # Test only the 'webservers' group
+````
+If successful, you’ll see "pong" response from each server.
+✅ Step 5: Run Ad-Hoc Commands
+````
+ansible all -a "uptime"                             # Run 'uptime' on all servers
+ansible dbservers -a "df -h"                        # Check disk usage on DB servers
+ansible webservers -a "free -m"                     # Check memory on web servers
+ ````
+Explanation:
+-a runs a shell command
+-m specifies a module (like ping or yum)
+
+✅ Step 6: Create a Simple Ansible Playbook
+````
+nano install_nginx.yml                              # Create a new playbook file
+````
+Example Playbook
+````
+---
+- name: Install and Start Nginx
+  hosts: webservers                                  # Apply tasks to webserver group
+  become: yes                                        # Run tasks with sudo privileges
+
+  tasks:
+    - name: Install Nginx package
+      yum:
+        name: nginx
+        state: present
+
+    - name: Start and enable Nginx service
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+````
+
+Run the playbook:
+````
+ansible-playbook install_nginx.yml                  # Execute the playbook
+````
+✅ Step 7: Ansible Best Practice Directory Structure
+
+````
+
+ansible-project/
+├── inventory                                        # Custom inventory file (optional)
+├── playbooks/
+│   └── install_nginx.yml                           # Playbook for nginx
+├── roles/                                           # Directory for reusable roles
+│   └── nginx/
+│       ├── tasks/
+│       │   └── main.yml
+
+````
+✅ Useful Ansible Commands Summary
+
+````
+ansible-inventory --list                           # Display parsed inventory
+ansible-inventory --graph                          # Graphical view of group relationships
+ansible all -a "uname -r"                          # Show kernel version on all hosts
+ansible-playbook -C install_nginx.yml              # Dry run (check changes without applying)
+ansible all -m setup                               # Collect system facts from all nodes
+ansible webservers -b -m yum -a "name=git state=present"  # Install git using yum module with sudo
+
+````
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
