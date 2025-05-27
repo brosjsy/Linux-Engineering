@@ -2323,7 +2323,250 @@ uptime                  # Load average
 free -h                 # Human-readable memory stats
 ````
 
+### 🐳  Installing, Configuring, and Managing Docker
+✅ What is Docker?
+Docker is an open-source platform used to automate the deployment, scaling, and management of applications using containers. Containers are lightweight, portable, and run isolated from the host OS.
+🔧 Installation Steps 
+````
+sudo yum install -y yum-utils                        # Install utility tools
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo  # Add Docker repo
+sudo yum install -y docker-ce docker-ce-cli containerd.io  # Install Docker
+sudo systemctl start docker                         # Start Docker service
+sudo systemctl enable docker                        # Enable Docker at boot
+````
 
+📦 Docker Management Commands
+````
+docker version                                      # Show installed Docker version
+docker info                                         # Display system-wide info
+sudo usermod -aG docker $USER                       # Add current user to Docker group (logout/login required)
+````
+🔧 Shell Script to Install Docker
+````
+#!/bin/bash
+# install-docker.sh - Install and setup Docker on CentOS
+
+sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sudo yum install -y docker-ce docker-ce-cli containerd.io
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo usermod -aG docker $USER
+echo "Docker installed and configured. Please logout and log back in to use Docker as non-root."
+````
+🧪  Running Docker Containers
+````
+docker run hello-world                              # Run test container to verify Docker setup
+docker run -it centos /bin/bash                     # Launch CentOS container with interactive terminal
+docker ps                                           # Show running containers
+docker ps -a                                        # Show all containers (running + exited)
+docker stop <container_id>                          # Stop a container
+docker start <container_id>                         # Start a stopped container
+docker rm <container_id>                            # Remove a container
+docker images                                       # List downloaded images
+docker rmi <image_id>                               # Remove an image
+````
+🛠️ Advanced Container Usage
+````
+docker run -d -p 8080:80 nginx                      # Run nginx in background and expose port 8080
+docker exec -it <container_id> /bin/bash            # Access a running container shell
+docker logs <container_id>                          # View logs from container
+docker cp file.txt <container_id>:/root/            # Copy file into container
+docker inspect <container_id>                       # Show detailed info about container
+````
+
+### 🤖Kickstart (Automate Linux Installation)
+✅ What is Kickstart?
+Kickstart is a method of automating Linux installations by using a pre-defined configuration file that contains instructions on partitioning, networking, user setup, and more.
+📝 Sample Kickstart File (centos7.ks)
+````
+#version=DEVEL
+install
+lang en_US.UTF-8
+keyboard us
+timezone Africa/Lagos --isUtc
+rootpw --plaintext MyStrongPassword
+auth --useshadow --passalgo=sha512
+firewall --enabled
+selinux --enforcing
+network --bootproto=dhcp --device=eth0 --onboot=on
+bootloader --location=mbr
+
+clearpart --all --initlabel
+autopart
+
+%packages
+@core
+vim
+net-tools
+%end
+
+%post
+echo "Installation complete!" > /root/install.log
+%end
+````
+
+Using Kickstart for Automated Installation
+Save the kickstart file as centos7.ks.
+
+Place the file on a web/ftp/nfs server:
+🌐 1. Using a Web Server (Apache HTTPD)
+✅ Step-by-Step Instructions
+````
+sudo yum install -y httpd                                # Install Apache web server
+sudo systemctl start httpd                               # Start the HTTP service
+sudo systemctl enable httpd                              # Enable it at system boot
+sudo firewall-cmd --add-service=http --permanent         # Open HTTP port
+sudo firewall-cmd --reload                               # Reload firewall rules
+````
+🗂️ Place your kickstart file
+````
+sudo cp centos7.ks /var/www/html/                        # Place kickstart file in web root
+sudo chmod 644 /var/www/html/centos7.ks                  # Set permissions
+````
+🌐 Access it
+Use in boot menu:
+linux ks=http://<server-ip>/centos7.ks
+
+### 📁 2. Using an FTP Server (vsftpd)
+✅ Install and Configure FTP
+````
+sudo yum install -y vsftpd                               # Install FTP server
+sudo systemctl start vsftpd                              # Start FTP server
+sudo systemctl enable vsftpd                             # Enable at boot
+sudo firewall-cmd --add-service=ftp --permanent          # Open FTP port
+sudo firewall-cmd --reload
+````
+🗂️ Set up Kickstart file in FTP directory
+````
+sudo cp centos7.ks /var/ftp/pub/                         # Default public directory for vsftpd
+sudo chmod 644 /var/ftp/pub/centos7.ks
+````
+📥 Access via boot command:
+````
+linux ks=ftp://<server-ip>/pub/centos7.ks
+````
+
+| Method | Install Command         | Directory        | Boot Command Format                    |
+| ------ | ----------------------- | ---------------- | -------------------------------------- |
+| HTTP   | `yum install httpd`     | `/var/www/html/` | `ks=http://<ip>/centos7.ks`            |
+| FTP    | `yum install vsftpd`    | `/var/ftp/pub/`  | `ks=ftp://<ip>/pub/centos7.ks`         |
+| NFS    | `yum install nfs-utils` | `/var/nfsshare/` | `ks=nfs:<ip>:/var/nfsshare/centos7.ks` |
+
+### DHCP
+DHCP (Dynamic Host Configuration Protocol) is a network management protocol used to automatically assign IP addresses, subnet masks, default gateways, DNS servers, and other network configurations to client devices on a network.
+
+🛠️ Step-by-Step: Installing, Configuring, and Managing DHCP Server
+✅ 1. Install the DHCP Server Package
+````
+sudo yum install -y dhcp                          # Install DHCP package
+````
+📝 2. Configure DHCP Server
+Step 1: Backup and edit the default config file
+````
+sudo cp /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.bak  # Backup
+sudo vi /etc/dhcp/dhcpd.conf                            # Edit configuration file
+````
+Sample /etc/dhcp/dhcpd.conf
+````
+# Global DHCP Configuration
+default-lease-time 600;                          # Default lease time in seconds
+max-lease-time 7200;                             # Maximum lease time in seconds
+authoritative;                                   # This server is the official DHCP server
+
+# Define the subnet and IP range
+subnet 192.168.10.0 netmask 255.255.255.0 {
+  range 192.168.10.100 192.168.10.200;           # Range of IPs to lease
+  option routers 192.168.10.1;                   # Default gateway
+  option subnet-mask 255.255.255.0;              # Subnet mask
+  option domain-name-servers 8.8.8.8, 8.8.4.4;   # DNS servers
+  option domain-name "example.local";            # Optional domain name
+}
+````
+🛑 Make sure the interface (like eth0, ens33, etc.) is set properly in the service file (see below).
+✅ 3. Set the Interface DHCP Listens On
+Edit the DHCPD service configuration file:
+````
+sudo vi /etc/sysconfig/dhcpd
+````
+Add this line with your interface name:
+````
+DHCPDARGS=ens33    # Replace with your actual NIC
+````
+🔥 4. Start and Enable DHCP Server
+````
+sudo systemctl start dhcpd                       # Start the DHCP server
+sudo systemctl enable dhcpd                      # Enable at boot
+sudo systemctl status dhcpd                      # Check status
+````
+🔐 5. Configure Firewall (if enabled)
+````
+sudo firewall-cmd --add-service=dhcp --permanent
+sudo firewall-cmd --reload
+````
+📊 6. View DHCP Leases
+````
+cat /var/lib/dhcpd/dhcpd.leases                  # See active leases
+````
+📄 7. Assign Static IP to a Specific Host (Optional)
+Add this block to your /etc/dhcp/dhcpd.conf:
+````
+host printer01 {
+  hardware ethernet 00:11:22:33:44:55;           # MAC Address
+  fixed-address 192.168.10.50;                   # Static IP to assign
+}
+````
+🔄 8. Restart DHCP Server to Apply Changes
+````
+sudo systemctl restart dhcpd
+````
+🧪 9. Verify DHCP Clients
+Use this on clients (or test VMs) to get IP:
+````
+sudo dhclient                                    # Requests IP via DHCP
+````
+🧹 10. Logs and Troubleshooting
+````
+journalctl -u dhcpd                              # View DHCP logs
+cat /var/log/messages | grep dhcpd               # Check logs for DHCP events
+````
+📜 Shell Script to Automate DHCP Server Setup
+````
+#!/bin/bash
+# Script to install and configure a basic DHCP server on CentOS/RHEL
+
+yum install -y dhcp
+
+cat <<EOF > /etc/dhcp/dhcpd.conf
+default-lease-time 600;
+max-lease-time 7200;
+authoritative;
+
+subnet 192.168.10.0 netmask 255.255.255.0 {
+  range 192.168.10.100 192.168.10.200;
+  option routers 192.168.10.1;
+  option subnet-mask 255.255.255.0;
+  option domain-name-servers 8.8.8.8, 8.8.4.4;
+  option domain-name "example.local";
+}
+EOF
+
+echo "DHCPDARGS=ens33" > /etc/sysconfig/dhcpd       # Replace with your interface
+
+systemctl enable dhcpd
+systemctl start dhcpd
+firewall-cmd --add-service=dhcp --permanent
+firewall-cmd --reload
+````
+
+✅ Summary
+Task	Command
+Install DHCP	````    yum install -y dhcp````
+Config File	      ````/etc/dhcp/dhcpd.conf````
+Start Service	````    systemctl start dhcpd````
+Enable at Boot	````  systemctl enable dhcpd````
+View Leases	      ````cat /var/lib/dhcpd/dhcpd.leases````
+Log Output	      ````journalctl -u dhcpd````
 
 
 
