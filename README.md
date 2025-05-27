@@ -2569,6 +2569,264 @@ View Leases	      ````cat /var/lib/dhcpd/dhcpd.leases````
 Log Output	      ````journalctl -u dhcpd````
 
 
+🔐 OpenVPN on CentOS 7/8 – Full Setup & Management Guide
+📘 What is OpenVPN?
+OpenVPN is a full-featured open-source VPN solution that enables secure connections across untrusted networks, supporting site-to-site and remote access connectivity.
+
+🖥️ Server-Side Setup (CentOS / RHEL)
+1️⃣ Install OpenVPN and Dependencies
+````
+sudo yum install -y epel-release                     # Enable EPEL repo
+sudo yum install -y openvpn easy-rsa                 # Install OpenVPN & Easy-RSA tools
+````
+2️⃣ Set Up the Certificate Authority (CA) with Easy-RSA
+````
+mkdir -p ~/openvpn-ca && cd ~/openvpn-ca
+cp -r /usr/share/easy-rsa/3/* .                      # Copy Easy-RSA files to working dir
+./easyrsa init-pki                                   # Initialize Public Key Infrastructure
+````
+Edit vars:
+```` Edit vars: ````
+Update vars details:
+````
+set_var EASYRSA_REQ_COUNTRY     "NG"
+set_var EASYRSA_REQ_PROVINCE    "Lagos"
+set_var EASYRSA_REQ_CITY        "Ikeja"
+set_var EASYRSA_REQ_ORG         "MyOrg"
+set_var EASYRSA_REQ_EMAIL       "admin@example.com"
+set_var EASYRSA_REQ_OU          "IT"
+````
+Then:
+````
+./easyrsa build-ca nopass                           # Build CA (no password for automation)
+````
+3️⃣ Generate Server Certificates & Keys
+````
+./easyrsa gen-req server nopass                     # Generate server key pair
+./easyrsa sign-req server server                    # Sign with your CA
+openvpn --genkey --secret ta.key                    # Create TLS key
+````
+4️⃣ Generate Client Certificates
+````
+./easyrsa gen-req client1 nopass                    # Create client key
+./easyrsa sign-req client client1                   # Sign client cert
+````
+5️⃣ Copy Files to OpenVPN Config Directory
+````
+sudo cp pki/ca.crt pki/issued/server.crt pki/private/server.key ta.key /etc/openvpn/
+````
+6️⃣ Create Server Configuration
+````
+sudo vi /etc/openvpn/server.conf
+````
+Paste the config below:
+````
+port 1194
+proto udp
+dev tun
+ca ca.crt
+cert server.crt
+key server.key
+dh none
+topology subnet
+server 10.8.0.0 255.255.255.0
+ifconfig-pool-persist ipp.txt
+push "redirect-gateway def1 bypass-dhcp"
+push "dhcp-option DNS 8.8.8.8"
+keepalive 10 120
+tls-auth ta.key 0
+cipher AES-256-CBC
+persist-key
+persist-tun
+status openvpn-status.log
+log /var/log/openvpn.log
+verb 3
+````
+7️⃣ Enable IP Forwarding
+````
+echo 1 > /proc/sys/net/ipv4/ip_forward
+sed -i 's/^#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
+sysctl -p
+````
+8️⃣ Configure Firewall
+````
+firewall-cmd --permanent --add-service=openvpn
+firewall-cmd --permanent --add-masquerade
+firewall-cmd --reload
+````
+Replace eth0 with your interface:
+````
+iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
+````
+9️⃣ Start OpenVPN Service
+````
+sudo systemctl enable openvpn@server
+sudo systemctl start openvpn@server
+sudo systemctl status openvpn@server
+````
+🧪 Client Setup (on client server or client os)
+🔟 Prepare the Client .ovpn Configuration File
+````
+vi client1.ovpn
+````
+Paste 
+````
+client
+dev tun
+proto udp
+remote YOUR.SERVER.IP 1194
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+ca ca.crt
+cert client1.crt
+key client1.key
+tls-auth ta.key 1
+cipher AES-256-CBC
+verb 3
+````
+🔄 Transfer VPN Client Files to Client Machine
+You need to send the following files:
+client1.ovpn
+ca.crt
+client1.crt
+client1.key
+ta.key
+Option 1: Using scp
+From the server:
+````
+scp ca.crt client1.crt client1.key ta.key client1.ovpn user@client_ip:/home/user/
+````
+Option 2: Using rsync
+````
+rsync -avz ca.crt client1.crt client1.key ta.key client1.ovpn user@client_ip:/home/user/
+````
+✅ Client Machine: Connect to VPN (Install OpenVPN if not already:)
+````
+sudo yum install -y openvpn          # Or apt install openvpn for Debian-based
+````
+Connect:
+````
+sudo openvpn --config client1.ovpn
+````
+Verify tunnel:
+````
+ip a | grep tun
+````
+### Shell Scripting to Automate the OpenVpn Linux installation
+````
+#!/bin/bash
+yum install -y epel-release
+yum install -y openvpn easy-rsa firewalld
+
+mkdir -p ~/openvpn-ca && cd ~/openvpn-ca
+cp -r /usr/share/easy-rsa/3/* ./
+./easyrsa init-pki
+echo -e "\n\n\n\n\n\n" | ./easyrsa build-ca nopass
+./easyrsa gen-req server nopass
+./easyrsa sign-req server server
+./easyrsa gen-req client1 nopass
+./easyrsa sign-req client client1
+openvpn --genkey --secret ta.key
+
+cp pki/ca.crt pki/issued/server.crt pki/private/server.key ta.key /etc/openvpn/
+
+cat <<EOF > /etc/openvpn/server.conf
+port 1194
+proto udp
+dev tun
+ca ca.crt
+cert server.crt
+key server.key
+dh none
+topology subnet
+server 10.8.0.0 255.255.255.0
+push "redirect-gateway def1 bypass-dhcp"
+push "dhcp-option DNS 8.8.8.8"
+keepalive 10 120
+tls-auth ta.key 0
+cipher AES-256-CBC
+persist-key
+persist-tun
+status openvpn-status.log
+log /var/log/openvpn.log
+verb 3
+EOF
+
+echo 1 > /proc/sys/net/ipv4/ip_forward
+sed -i 's/^#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
+sysctl -p
+
+firewall-cmd --permanent --add-service=openvpn
+firewall-cmd --permanent --add-masquerade
+firewall-cmd --reload
+
+systemctl start openvpn@server
+systemctl enable openvpn@server
+````
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
